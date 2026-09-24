@@ -260,5 +260,109 @@ export const COUNTRIES_INTELLIGENCE: Record<string, CountryIntelligence> = {
     ],
     activeCrisisIds: [],
     historicalCrisisIds: ['crisis-yen-carry-unwind']
+  },
+  IR: {
+    name: 'Iran',
+    code: 'IR',
+    capital: 'Tehran',
+    region: 'Middle East',
+    population: '88.5 Million',
+    gdp: '$400 Billion',
+    flagEmoji: '🇮🇷',
+    coordinates: [35.6892, 51.3890],
+    riskBreakdown: {
+      politicalRisk: 0.88,
+      economicStress: 0.82,
+      conflictRisk: 0.93,
+      humanitarianStress: 0.65,
+      marketStress: 0.84,
+    },
+    summary: 'Regional power bordering the Persian Gulf and Strait of Hormuz, maintaining active missile development programs and extensive regional proxy deterrence architectures.',
+    currentConditions: 'Naval patrols along the Strait of Hormuz, active IAEA nuclear monitoring discussions, and deep bilateral defense-technological alignments.',
+    majorDiplomaticDevelopments: [
+      'Expanded membership in BRICS and Shanghai Cooperation Organisation (SCO)',
+      'Ongoing indirect mediation with Western powers on nuclear transparency and sanctions relief',
+      'Strengthened security coordination with regional axis partners across Iraq, Syria, and Yemen'
+    ],
+    activeCrisisIds: ['crisis-hormuz-strait-standoff'],
+    historicalCrisisIds: ['crisis-1979-iran-oil-shock']
+  },
+  PS: {
+    name: 'Palestine',
+    code: 'PS',
+    capital: 'Ramallah / Gaza',
+    region: 'Middle East',
+    population: '5.2 Million',
+    gdp: '$18 Billion',
+    flagEmoji: '🇵🇸',
+    coordinates: [31.9522, 35.2332],
+    riskBreakdown: {
+      politicalRisk: 0.95,
+      economicStress: 0.96,
+      conflictRisk: 0.98,
+      humanitarianStress: 0.99,
+      marketStress: 0.88,
+    },
+    summary: 'Territory enduring severe humanitarian emergency in the Gaza Strip alongside escalating tensions and security operations across the West Bank.',
+    currentConditions: 'Acute IPC Phase 5 catastrophic hunger alerts across Gaza; severe health system degradation; extensive municipal infrastructure damage.',
+    majorDiplomaticDevelopments: [
+      'Multilateral ceasefire and humanitarian release negotiations hosted in Doha and Cairo',
+      'UN General Assembly resolution affirming ICJ advisory opinion on occupied territories',
+      'International donor mobilization conferences for emergency civilian logistics'
+    ],
+    activeCrisisIds: ['crisis-gaza-conflict-catastrophe'],
+    historicalCrisisIds: []
+  },
+  SO: {
+    name: 'Somalia',
+    code: 'SO',
+    capital: 'Mogadishu',
+    region: 'Horn of Africa',
+    population: '18.1 Million',
+    gdp: '$11 Billion',
+    flagEmoji: '🇸🇴',
+    coordinates: [2.0469, 45.3182],
+    riskBreakdown: {
+      politicalRisk: 0.89,
+      economicStress: 0.88,
+      conflictRisk: 0.85,
+      humanitarianStress: 0.91,
+      marketStress: 0.72,
+    },
+    summary: 'Strategic Horn of Africa nation controlling Africa\'s longest coastline along the Indian Ocean and Gulf of Aden, navigating internal federal disputes and counter-insurgency operations.',
+    currentConditions: 'Intense diplomatic standoff over Ethiopia-Somaliland MoU; deployment of Egyptian defense personnel to Mogadishu; ongoing operations against Al-Shabaab.',
+    majorDiplomaticDevelopments: [
+      'Signing of comprehensive bilateral defense and security pact with Egypt',
+      'African Union transition from ATMIS to new AUSSOM peacekeeping mission structure',
+      'Ankara-facilitated indirect diplomatic talks to de-escalate Gulf of Aden port dispute'
+    ],
+    activeCrisisIds: ['crisis-horn-of-africa-somalia-ethiopia'],
+    historicalCrisisIds: []
+  },
+  EE: {
+    name: 'Estonia / Baltic Sea',
+    code: 'EE',
+    capital: 'Tallinn',
+    region: 'Northern Europe',
+    population: '1.36 Million',
+    gdp: '$41 Billion',
+    flagEmoji: '🇪🇪',
+    coordinates: [59.4370, 24.7536],
+    riskBreakdown: {
+      politicalRisk: 0.28,
+      economicStress: 0.38,
+      conflictRisk: 0.75,
+      humanitarianStress: 0.15,
+      marketStress: 0.52,
+    },
+    summary: 'Pioneering digital NATO and EU member state on the Baltic Sea, serving as the front line for monitoring sub-threshold hybrid warfare, seabed infrastructure sabotage, and cyber defense.',
+    currentConditions: 'Heightened naval surveillance over Baltic Sea fiber cables and power interconnectors; response to persistent regional GPS jamming affecting civil flights.',
+    majorDiplomaticDevelopments: [
+      'Joint Nordic-Baltic seabed surveillance initiative launched under NATO maritime command',
+      'Formal desynchronization of Baltic electricity grid from Russian BRELL ring scheduled',
+      'Hosting of the NATO Cooperative Cyber Defence Centre of Excellence (CCDCOE)'
+    ],
+    activeCrisisIds: ['crisis-europe-hybrid-warfare'],
+    historicalCrisisIds: []
   }
 };

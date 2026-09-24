@@ -3,18 +3,13 @@ import { APIProvider, Map, AdvancedMarker, useMap } from '@vis.gl/react-google-m
 import { CrisisEvent, CrisisCategory } from '../types/crisis';
 import { 
   Globe, 
-  Layers, 
-  Compass, 
-  Play, 
-  Pause, 
   RotateCcw, 
-  MapPin, 
   Flame, 
   TrendingUp, 
-  ShieldAlert, 
   Users,
-  Eye,
-  Maximize2
+  Compass,
+  Play,
+  Pause
 } from 'lucide-react';
 
 interface GoogleEarthViewProps {
@@ -26,21 +21,27 @@ interface GoogleEarthViewProps {
     conflictZones: boolean;
     economicStress: boolean;
     diplomaticHotspots: boolean;
+    humanitarian?: boolean;
     pulses: boolean;
     countryBorders: boolean;
     heatmaps: boolean;
   };
 }
 
-const CATEGORY_COLORS: Record<CrisisCategory, { bg: string; border: string; glow: string }> = {
-  military: { bg: 'bg-red-600', border: 'border-red-400', glow: 'shadow-[0_0_12px_rgba(239,68,68,0.8)]' },
-  economic: { bg: 'bg-blue-600', border: 'border-blue-400', glow: 'shadow-[0_0_12px_rgba(59,130,246,0.8)]' },
-  financial: { bg: 'bg-cyan-600', border: 'border-cyan-400', glow: 'shadow-[0_0_12px_rgba(6,182,212,0.8)]' },
-  political: { bg: 'bg-purple-600', border: 'border-purple-400', glow: 'shadow-[0_0_12px_rgba(168,85,247,0.8)]' },
-  humanitarian: { bg: 'bg-amber-600', border: 'border-amber-400', glow: 'shadow-[0_0_12px_rgba(245,158,11,0.8)]' },
+// Strict Restrained Semantic Color Palette
+const CATEGORY_COLORS: Record<CrisisCategory, { bg: string; border: string }> = {
+  conflict: { bg: 'bg-[#dc2626]', border: 'border-[#dc2626]' },
+  military: { bg: 'bg-[#dc2626]', border: 'border-[#dc2626]' },
+  security: { bg: 'bg-[#dc2626]', border: 'border-[#dc2626]' },
+  economic: { bg: 'bg-[#2563eb]', border: 'border-[#2563eb]' },
+  financial: { bg: 'bg-[#2563eb]', border: 'border-[#2563eb]' },
+  political: { bg: 'bg-[#94a3b8]', border: 'border-[#94a3b8]' },
+  diplomatic: { bg: 'bg-[#94a3b8]', border: 'border-[#94a3b8]' },
+  humanitarian: { bg: 'bg-[#d97706]', border: 'border-[#d97706]' },
+  energy: { bg: 'bg-[#475569]', border: 'border-[#475569]' },
+  environmental: { bg: 'bg-[#15803d]', border: 'border-[#15803d]' },
 };
 
-// Internal controller component for smooth camera animations and fly-to actions
 const MapCameraController: React.FC<{
   selectedEvent: CrisisEvent | null;
   isOrbiting: boolean;
@@ -50,7 +51,6 @@ const MapCameraController: React.FC<{
   const map = useMap();
   const headingRef = useRef(0);
 
-  // Fly to selected event
   useEffect(() => {
     if (!map || !selectedEvent) return;
     map.panTo({ lat: selectedEvent.latitude, lng: selectedEvent.longitude });
@@ -58,23 +58,19 @@ const MapCameraController: React.FC<{
     if (map.getZoom() !== targetZoom) {
       map.setZoom(targetZoom);
     }
-  }, [map, selectedEvent]);
+    if (mapType === 'satellite' || mapType === 'hybrid') {
+      map.setTilt(tilt);
+    }
+  }, [selectedEvent, map, mapType, tilt]);
 
-  // Adjust tilt
-  useEffect(() => {
-    if (!map) return;
-    map.setTilt(tilt);
-  }, [map, tilt]);
-
-  // Orbit rotation animation
   useEffect(() => {
     if (!map || !isOrbiting) return;
     const interval = setInterval(() => {
-      headingRef.current = (headingRef.current + 0.35) % 360;
+      headingRef.current = (headingRef.current + 1.2) % 360;
       map.setHeading(headingRef.current);
-    }, 50);
+    }, 100);
     return () => clearInterval(interval);
-  }, [map, isOrbiting]);
+  }, [isOrbiting, map]);
 
   return null;
 };
@@ -86,35 +82,32 @@ export const GoogleEarthView: React.FC<GoogleEarthViewProps> = ({
   onSelectCountry,
   layerFilters,
 }) => {
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyD8U5wu8pBGE-lTkloLDVqc90GpMLW7GzI';
-
-  const [mapType, setMapType] = useState<'hybrid' | 'satellite' | 'terrain' | 'roadmap'>('hybrid');
-  const [tilt, setTilt] = useState<number>(45);
-  const [isOrbiting, setIsOrbiting] = useState<boolean>(false);
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+  const [mapType, setMapType] = useState<'roadmap' | 'satellite' | 'hybrid' | 'terrain'>('satellite');
+  const [isOrbiting, setIsOrbiting] = useState(false);
+  const [tilt, setTilt] = useState(45);
   const [hoveredEvent, setHoveredEvent] = useState<CrisisEvent | null>(null);
 
-  // Filter events by layer
   const visibleEvents = events.filter((ev) => {
-    if (ev.category === 'military' && !layerFilters.conflictZones) return false;
-    if (ev.category === 'economic' && !layerFilters.economicStress) return false;
-    if (ev.category === 'political' && !layerFilters.diplomaticHotspots) return false;
+    if ((ev.category === 'conflict' || ev.category === 'military') && !layerFilters.conflictZones) return false;
+    if ((ev.category === 'economic' || ev.category === 'financial') && !layerFilters.economicStress) return false;
+    if ((ev.category === 'political' || ev.category === 'diplomatic') && !layerFilters.diplomaticHotspots) return false;
+    if (ev.category === 'humanitarian' && layerFilters.humanitarian === false) return false;
     return true;
   });
 
   return (
-    <div className="relative w-full h-full bg-slate-950 overflow-hidden font-mono">
-      <APIProvider apiKey={apiKey} libraries={['places', 'marker', 'geometry']}>
+    <div className="relative w-full h-full bg-[#111111] overflow-hidden select-none font-mono">
+      <APIProvider apiKey={apiKey}>
         <Map
-          mapId="DEMO_MAP_ID"
-          defaultCenter={{ lat: 25.0, lng: 35.0 }}
-          defaultZoom={3}
+          defaultCenter={{ lat: 25.0, lng: 20.0 }}
+          defaultZoom={2.4}
           mapTypeId={mapType}
           tilt={tilt}
           heading={0}
           gestureHandling="greedy"
           disableDefaultUI={true}
           className="w-full h-full"
-          internalUsageAttributionIds={['gmp_mcp_codeassist_v1_aistudio']}
         >
           <MapCameraController
             selectedEvent={selectedEvent}
@@ -123,10 +116,9 @@ export const GoogleEarthView: React.FC<GoogleEarthViewProps> = ({
             tilt={tilt}
           />
 
-          {/* Render Real Advanced Markers with Radar Pulses */}
           {visibleEvents.map((ev) => {
             const isSelected = selectedEvent?.id === ev.id;
-            const style = CATEGORY_COLORS[ev.category] || CATEGORY_COLORS.military;
+            const colors = CATEGORY_COLORS[ev.category] || CATEGORY_COLORS.conflict;
 
             return (
               <AdvancedMarker
@@ -138,39 +130,31 @@ export const GoogleEarthView: React.FC<GoogleEarthViewProps> = ({
                     onSelectCountry(ev.countryCode);
                   }
                 }}
-                title={ev.title}
               >
-                <div 
+                <div
                   className="relative group cursor-pointer"
                   onMouseEnter={() => setHoveredEvent(ev)}
                   onMouseLeave={() => setHoveredEvent(null)}
                 >
-                  {/* Radar Pulse for Active Events */}
-                  {layerFilters.pulses && (ev.status === 'active' || ev.status === 'escalating') && (
-                    <div 
-                      className={`absolute -inset-2.5 rounded-full ${style.bg} opacity-75 animate-ping pointer-events-none`} 
-                    />
+                  {layerFilters.pulses && (ev.status === 'ongoing' || ev.status === 'escalating' || ev.status === 'active') && (
+                    <div className={`absolute -inset-1.5 rounded-full ${colors.bg} animate-ping opacity-40`} />
                   )}
 
-                  {/* Marker Pin Head */}
                   <div
-                    className={`relative z-10 flex items-center justify-center rounded-full text-white font-bold transition-transform ${
-                      isSelected 
-                        ? 'w-7 h-7 ring-2 ring-white scale-125 ' + style.bg + ' ' + style.glow
-                        : 'w-5 h-5 ' + style.bg + ' ' + style.border + ' border hover:scale-125'
+                    className={`relative z-10 flex items-center justify-center rounded-full text-white font-mono font-bold border border-neutral-900 transition-transform ${
+                      isSelected
+                        ? `w-5 h-5 ring-2 ring-white scale-125 ${colors.bg}`
+                        : `w-4 h-4 hover:scale-125 ${colors.bg}`
                     }`}
                   >
-                    <span className="text-[9px]">
-                      {ev.riskIndicator >= 0.8 ? '!' : Math.round(ev.riskIndicator * 10)}
+                    <span style={{ fontSize: '8px' }}>
+                      {ev.severity === 'critical' ? '!' : Math.round(ev.riskIndicator * 10)}
                     </span>
                   </div>
 
-                  {/* Hover Tag */}
-                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 hidden group-hover:block z-50 pointer-events-none">
-                    <div className="bg-slate-950/95 border border-slate-700 px-2 py-1 rounded shadow-xl text-[10px] text-slate-100 whitespace-nowrap">
-                      <span className="text-cyan-400 font-bold">{ev.country}: </span>
-                      <span>{ev.title}</span>
-                    </div>
+                  {/* Tooltip */}
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 hidden group-hover:block z-50 pointer-events-none bg-[#151515] border border-[#303030] px-2 py-1 rounded shadow-lg text-[10px] text-[#E6E6E6] whitespace-nowrap font-mono">
+                    <span className="text-[#A0A0A0]">{ev.country}:</span> <strong>{ev.title}</strong>
                   </div>
                 </div>
               </AdvancedMarker>
@@ -179,84 +163,64 @@ export const GoogleEarthView: React.FC<GoogleEarthViewProps> = ({
         </Map>
       </APIProvider>
 
-      {/* Floating Tactical Overlay HUD Controls */}
-      <div className="absolute top-4 right-4 z-20 flex flex-col gap-2 bg-slate-900/90 backdrop-blur-md border border-slate-800 p-2 rounded-xl shadow-2xl">
-        {/* Imagery Type Switcher */}
-        <div className="flex flex-col gap-1 text-[10px]">
-          <span className="text-slate-400 uppercase tracking-wider px-1">Earth Imagery</span>
-          <div className="grid grid-cols-2 gap-1">
-            <button
-              onClick={() => setMapType('hybrid')}
-              className={`px-2 py-1 rounded text-center transition-colors ${
-                mapType === 'hybrid' ? 'bg-cyan-950 text-cyan-400 border border-cyan-800 font-bold' : 'text-slate-400 hover:bg-slate-800'
-              }`}
-            >
-              Hybrid
-            </button>
-            <button
-              onClick={() => setMapType('satellite')}
-              className={`px-2 py-1 rounded text-center transition-colors ${
-                mapType === 'satellite' ? 'bg-cyan-950 text-cyan-400 border border-cyan-800 font-bold' : 'text-slate-400 hover:bg-slate-800'
-              }`}
-            >
-              Satellite
-            </button>
-            <button
-              onClick={() => setMapType('terrain')}
-              className={`px-2 py-1 rounded text-center transition-colors ${
-                mapType === 'terrain' ? 'bg-cyan-950 text-cyan-400 border border-cyan-800 font-bold' : 'text-slate-400 hover:bg-slate-800'
-              }`}
-            >
-              Terrain
-            </button>
-            <button
-              onClick={() => setMapType('roadmap')}
-              className={`px-2 py-1 rounded text-center transition-colors ${
-                mapType === 'roadmap' ? 'bg-cyan-950 text-cyan-400 border border-cyan-800 font-bold' : 'text-slate-400 hover:bg-slate-800'
-              }`}
-            >
-              Political
-            </button>
-          </div>
+      {/* Map Control HUD */}
+      <div className="absolute top-3 right-3 z-20 flex flex-col gap-1.5 bg-[#151515]/95 border border-[#303030] p-2 rounded shadow-lg text-xs">
+        <span className="text-[9px] font-bold text-[#707070] uppercase tracking-wider px-1">
+          MAP CONTROLS
+        </span>
+
+        <div className="grid grid-cols-2 gap-1 text-[10px]">
+          <button
+            onClick={() => setMapType('satellite')}
+            className={`p-1 rounded text-center transition-colors font-bold ${
+              mapType === 'satellite' ? 'bg-[#2563eb] text-white' : 'text-[#A0A0A0] hover:bg-[#202020]'
+            }`}
+          >
+            Satellite
+          </button>
+          <button
+            onClick={() => setMapType('hybrid')}
+            className={`p-1 rounded text-center transition-colors font-bold ${
+              mapType === 'hybrid' ? 'bg-[#2563eb] text-white' : 'text-[#A0A0A0] hover:bg-[#202020]'
+            }`}
+          >
+            Hybrid
+          </button>
+          <button
+            onClick={() => setMapType('roadmap')}
+            className={`p-1 rounded text-center transition-colors font-bold ${
+              mapType === 'roadmap' ? 'bg-[#2563eb] text-white' : 'text-[#A0A0A0] hover:bg-[#202020]'
+            }`}
+          >
+            Roadmap
+          </button>
+          <button
+            onClick={() => setMapType('terrain')}
+            className={`p-1 rounded text-center transition-colors font-bold ${
+              mapType === 'terrain' ? 'bg-[#2563eb] text-white' : 'text-[#A0A0A0] hover:bg-[#202020]'
+            }`}
+          >
+            Terrain
+          </button>
         </div>
 
-        {/* 3D Tilt Toggle */}
         <button
-          onClick={() => setTilt(prev => prev === 0 ? 45 : 0)}
-          className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors flex items-center justify-between gap-2 text-xs"
+          onClick={() => setTilt(tilt === 0 ? 45 : 0)}
+          className="p-1 rounded bg-[#1C1C1C] border border-[#303030] text-[10px] text-[#A0A0A0] hover:text-[#E6E6E6] flex items-center justify-between"
         >
-          <span className="flex items-center gap-1.5">
-            <Eye className="w-3.5 h-3.5 text-cyan-400" />
-            <span>3D TILT</span>
-          </span>
-          <span className="text-[10px] text-cyan-400 font-bold">{tilt}°</span>
+          <span>3D Perspective</span>
+          <span className="font-bold text-[#E6E6E6]">{tilt}°</span>
         </button>
 
-        {/* Orbit Heading Rotation */}
         <button
           onClick={() => setIsOrbiting(!isOrbiting)}
-          className="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors flex items-center justify-between gap-2 text-xs"
+          className="p-1 rounded bg-[#1C1C1C] border border-[#303030] text-[10px] text-[#A0A0A0] hover:text-[#E6E6E6] flex items-center justify-between"
         >
-          <span className="flex items-center gap-1.5">
-            <Compass className="w-3.5 h-3.5 text-amber-400" />
-            <span>ORBIT</span>
-          </span>
-          <span className={`text-[10px] font-bold ${isOrbiting ? 'text-emerald-400' : 'text-slate-500'}`}>
+          <span>Auto Orbit</span>
+          <span className={`font-bold ${isOrbiting ? 'text-[#16a34a]' : 'text-[#707070]'}`}>
             {isOrbiting ? 'ON' : 'OFF'}
           </span>
         </button>
-      </div>
-
-      {/* Real Earth Attribution & Status Watermark */}
-      <div className="absolute bottom-6 left-6 z-20 bg-slate-900/90 backdrop-blur-md border border-slate-800/80 px-3.5 py-2 rounded-xl shadow-xl flex items-center gap-3 text-xs">
-        <div className="flex items-center gap-2">
-          <Globe className="w-4 h-4 text-cyan-400 animate-pulse" />
-          <span className="text-slate-200 font-semibold">Google Earth Satellite Live Feed</span>
-        </div>
-        <span className="text-slate-500">|</span>
-        <span className="text-slate-400 text-[11px]">
-          Rendering {visibleEvents.length} Active Geopolitical Pins
-        </span>
       </div>
     </div>
   );

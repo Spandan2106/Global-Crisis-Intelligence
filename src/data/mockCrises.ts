@@ -442,10 +442,10 @@ export const MOCK_CRISIS_EVENTS: CrisisEvent[] = [
     region: 'Middle East',
     latitude: 12.5855,
     longitude: 43.3361,
-    date: '2024-01-12',
+    date: '2026-09-24',
     status: 'active',
     severity: 'high',
-    riskIndicator: 0.77,
+    riskIndicator: 0.82,
     confidence: 'High',
     zoneClassification: 'strategic_chokepoint',
     summary: 'Anti-ship ballistic missile and drone strikes against commercial bulk carriers and container vessels traversing the Bab al-Mandab strait, forcing widespread rerouting around Cape of Good Hope.',
@@ -459,26 +459,117 @@ export const MOCK_CRISIS_EVENTS: CrisisEvent[] = [
     timeline: [
       { date: '2023-11-19', title: 'Galaxy Leader Commercial Vessel Seizure', description: 'Armed boarding of merchant ship signaled initiation of targeted maritime campaign.' },
       { date: '2024-01-11', title: 'Coalition Operation Prosperity Guardian Strikes', description: 'Multinational airstrikes against coastal radar installations and launch facilities.' },
-      { date: '2024-06-12', title: 'Merchant Vessel Tutor Sinking', description: 'First confirmed sinking by uncrewed surface vessel (USV) in Southern Red Sea.' }
+      { date: '2024-06-12', title: 'Merchant Vessel Tutor Sinking', description: 'First confirmed sinking by uncrewed surface vessel (USV) in Southern Red Sea.' },
+      { date: '2026-09-24', title: 'Continuous UKMTO Maritime Advisories', description: 'Ongoing surface-to-air drone defense patrols and merchant fleet escorts.' }
     ],
     economicImpact: 'Container spot rates (Shanghai to Rotterdam) surged over 300% in peak months; substantial carbon footprint increase from extended maritime routes.',
     humanitarianImpact: 'Complications in maritime humanitarian food aid delivery reaching port of Hodeidah for Yemeni civilian relief.',
     regionalImpact: 'Egyptian Suez Canal revenues dropped by over 50% year-on-year, adding severe fiscal pressure to Cairo sovereign finances.',
     sources: [
-      { name: 'International Maritime Organization', publisher: 'IMO Security Council', publishedDate: '2024-05-20', type: 'multilateral', url: 'https://www.imo.org' },
-      { name: 'AP News Fleet Tracker', publisher: 'Associated Press', publishedDate: '2024-08-01', type: 'wire', url: 'https://apnews.com' },
-      { name: 'Lloyd\'s List Intelligence', publisher: 'Maritime Intelligence', publishedDate: '2024-07-28', type: 'financial', url: 'https://www.lloydslist.com' }
+      { name: 'International Maritime Organization', publisher: 'IMO Security Council', publishedDate: '2026-09-20', type: 'multilateral', url: 'https://www.imo.org' },
+      { name: 'UK Maritime Trade Operations (UKMTO)', publisher: 'Royal Navy / UKMTO', publishedDate: '2026-09-24', type: 'official', url: 'https://www.ukmto.org' },
+      { name: 'AP News Fleet Tracker', publisher: 'Associated Press', publishedDate: '2026-09-22', type: 'wire', url: 'https://apnews.com' }
     ],
     reportsDiffer: false,
     isDemo: true,
-    lastUpdated: '2026-09-20T09:15:00Z',
-    connectedCrisisIds: ['crisis-egypt-debt-stress', 'crisis-middle-east-regional']
+    lastUpdated: '2026-09-24T08:30:00Z',
+    connectedCrisisIds: ['crisis-hormuz-strait-standoff', 'crisis-middle-east-regional', 'crisis-gaza-conflict-catastrophe']
   },
 
-  // Levant Regional Conflict
+  // Ongoing Strait of Hormuz Standoff
+  {
+    id: 'crisis-hormuz-strait-standoff',
+    title: 'Strait of Hormuz Naval Standoff, Tanker Interdictions & Drone Surveillance',
+    category: 'military',
+    subcategory: 'Naval incidents',
+    country: 'Iran',
+    countryCode: 'IR',
+    region: 'Middle East',
+    latitude: 26.5667,
+    longitude: 56.2500,
+    date: '2026-09-24',
+    status: 'active',
+    severity: 'critical',
+    riskIndicator: 0.93,
+    confidence: 'High',
+    zoneClassification: 'strategic_chokepoint',
+    summary: 'Acute naval tension across the world\'s most critical energy chokepoint, featuring IRGC fast-attack craft patrols, electronic GPS spoofing of VLCC crude tankers, and heightened coalition naval escort readiness.',
+    whyMonitored: 'Transits approximately 20.5 million barrels of petroleum per day—equating to ~21% of global liquid petroleum consumption. Any closure or major disruption would shock global energy markets past $120/bbl.',
+    contributingFactors: [
+      { factor: 'Commercial tanker boarding operations', weight: 0.35, description: 'Helicopter and fast-boat interdictions of international merchant tankers' },
+      { factor: 'Electronic warfare & AIS/GPS spoofing', weight: 0.28, description: 'Disruptions to maritime navigation leading vessels toward territorial waters' },
+      { factor: 'Multinational naval deterrent patrols', weight: 0.22, description: 'US Fifth Fleet and European EMASOH continuous air and sea surveillance' },
+      { factor: 'Regional energy escalation vulnerability', weight: 0.15, description: 'Direct coupling with wider Gulf security agreements and Persian Gulf refinery security' }
+    ],
+    timeline: [
+      { date: '2024-04-13', title: 'MSC Aries Container Ship Boarding', description: 'Special forces seize Portuguese-flagged vessel near Strait of Hormuz.' },
+      { date: '2025-02-18', title: 'GPS Spoofing Cluster Alert', description: 'UKMTO reports severe navigation anomalies impacting 14 oil tankers in the strait.' },
+      { date: '2026-09-24', title: 'Live Active Chokepoint Watch', description: 'Daily VLCC transit monitoring and allied naval surveillance maintaining open shipping lanes.' }
+    ],
+    economicImpact: 'Geopolitical risk premium of $4-$9 per barrel on Brent and Dubai crude benchmarks; substantial spike in Lloyd\'s war-risk hull insurance rates.',
+    humanitarianImpact: 'Disruptions threaten fuel and desalination energy supply chains for Gulf littoral populations and downstream Asian economies.',
+    regionalImpact: 'Strengthened security pacts between GCC states and international maritime security coalitions; acceleration of pipeline bypass routes (ADCOP in UAE and Petroline in Saudi Arabia).',
+    sources: [
+      { name: 'UK Maritime Trade Operations (UKMTO) Bulletins', publisher: 'UKMTO Dubai', publishedDate: '2026-09-24', type: 'official', url: 'https://www.ukmto.org' },
+      { name: 'US Naval Forces Central Command (NAVCENT)', publisher: 'US Navy 5th Fleet', publishedDate: '2026-09-23', type: 'official', url: 'https://www.cusnc.navy.mil' },
+      { name: 'Lloyd\'s List Intelligence Crude Monitor', publisher: 'Informa Maritime', publishedDate: '2026-09-24', type: 'financial', url: 'https://www.lloydslist.com' }
+    ],
+    reportsDiffer: false,
+    isDemo: true,
+    lastUpdated: '2026-09-24T09:00:00Z',
+    connectedCrisisIds: ['crisis-red-sea-chokepoint', 'crisis-middle-east-regional']
+  },
+
+  // Gaza Conflict & Humanitarian Emergency
+  {
+    id: 'crisis-gaza-conflict-catastrophe',
+    title: 'Gaza Urban Hostilities, Border Operations & Humanitarian Catastrophe',
+    category: 'military',
+    subcategory: 'Active armed conflict',
+    country: 'Palestine',
+    countryCode: 'PS',
+    region: 'Middle East',
+    latitude: 31.4167,
+    longitude: 34.3333,
+    date: '2026-09-24',
+    status: 'escalating',
+    severity: 'critical',
+    riskIndicator: 0.98,
+    confidence: 'High',
+    zoneClassification: 'highest_conflict_zone',
+    summary: 'Devastating high-intensity conflict across the Gaza Strip characterized by intensive urban combat, near-total population displacement, severe destruction of healthcare and water systems, and acute IPC Phase 5 catastrophic hunger alerts.',
+    whyMonitored: 'The epicentral catalyst of the broader Middle Eastern regional confrontation, involving ongoing international mediation (US, Egypt, Qatar), ICJ proceedings, and catastrophic humanitarian collapse.',
+    contributingFactors: [
+      { factor: 'Urban kinetic bombardment & artillery', weight: 0.36, description: 'Sustained ground operations, tunnel clearance, and intense aerial strikes' },
+      { factor: 'Critical aid delivery impediments', weight: 0.30, description: 'Restricted border crossings, inspection bottlenecks, and logistical insecurity inside Gaza' },
+      { factor: 'Civilian infrastructure destruction', weight: 0.20, description: 'Over 70% of housing units and majority of hospitals damaged or non-functional' },
+      { factor: 'Regional escalatory linkage', weight: 0.14, description: 'Direct transmission mechanism triggering actions in Lebanon, Yemen, and Iraq' }
+    ],
+    timeline: [
+      { date: '2023-10-07', title: 'Outbreak of Major Hostilities', description: 'Coordinated cross-border assault followed by comprehensive siege and military response.' },
+      { date: '2024-05-06', title: 'Rafah Border Crossing Operation', description: 'Ground forces advance along Philadelphi corridor, shifting humanitarian logistics.' },
+      { date: '2025-08-15', title: 'UN Polio Emergency Vaccination Rounds', description: 'Localized humanitarian pauses enacted to inoculate over 500,000 children.' },
+      { date: '2026-09-24', title: 'Ongoing Kinetic Clashes & Ceasefire Talks', description: 'Continuous diplomatic mediation in Doha and Cairo alongside active urban engagements.' }
+    ],
+    economicImpact: 'Economic output in Gaza contracted by over 80%; billions required for multi-decade reconstruction; regional investment drag across the Levant.',
+    humanitarianImpact: 'Over 40,000 fatalities reported; 1.9 million civilians displaced; acute risk of famine and waterborne epidemics in central and northern governorates.',
+    regionalImpact: 'Catalyzed proxy fronts in Lebanon and the Red Sea; sparked global legal filings at the International Court of Justice and UN General Assembly.',
+    sources: [
+      { name: 'UN OCHA Gaza Crisis Daily Updates', publisher: 'United Nations OCHA', publishedDate: '2026-09-24', type: 'multilateral', url: 'https://www.unocha.org' },
+      { name: 'World Health Organization (WHO) Situation Reports', publisher: 'WHO EMRO', publishedDate: '2026-09-23', type: 'multilateral', url: 'https://www.who.int' },
+      { name: 'Integrated Food Security Phase Classification (IPC)', publisher: 'IPC Global Initiative', publishedDate: '2026-09-21', type: 'academic', url: 'https://www.ipcinfo.org' }
+    ],
+    reportsDiffer: true,
+    reportsDisagreementSummary: 'Primary discrepancies center on daily humanitarian aid truck tally figures reported by COGAT versus UN agencies receiving consignments.',
+    isDemo: true,
+    lastUpdated: '2026-09-24T08:45:00Z',
+    connectedCrisisIds: ['crisis-middle-east-regional', 'crisis-red-sea-chokepoint', 'crisis-hormuz-strait-standoff']
+  },
+
+  // Levant / Lebanon Regional Conflict
   {
     id: 'crisis-middle-east-regional',
-    title: 'Levant Regional Conflict & Cross-Border Missile Strikes',
+    title: 'Lebanon-Israel Blue Line Cross-Border Escalation & Urban Strike Campaign',
     category: 'military',
     subcategory: 'Airstrikes',
     country: 'Lebanon',
@@ -486,44 +577,45 @@ export const MOCK_CRISIS_EVENTS: CrisisEvent[] = [
     region: 'Middle East',
     latitude: 33.8938,
     longitude: 35.5018,
-    date: '2024-09-17',
+    date: '2026-09-24',
     status: 'escalating',
     severity: 'critical',
-    riskIndicator: 0.91,
+    riskIndicator: 0.95,
     confidence: 'High',
     zoneClassification: 'highest_conflict_zone',
-    summary: 'Substantial military escalation along the Blue Line border and urban centers, featuring intense aerial bombardment, targeted high-command strikes, and localized ground incursions.',
-    whyMonitored: 'High danger of direct confrontation involving major energy-producing Gulf powers, catastrophic civilian displacement, and destabilization of already fragile state apparatuses.',
+    summary: 'Substantial military escalation along the Blue Line border and southern suburbs of Beirut, featuring heavy aerial bombardment, targeted high-command strikes, cross-border rocketry, and localized ground incursions.',
+    whyMonitored: 'High danger of regional all-out confrontation involving Iranian deterrence assets, catastrophic civilian displacement across Lebanon, and severe destabilization of Lebanese sovereign infrastructure.',
     contributingFactors: [
-      { factor: 'Air strike density', weight: 0.31, description: 'Sustained strikes on command centers and munitions stockpiles' },
-      { factor: 'Border artillery & rocket fire', weight: 0.25, description: 'Cross-border volleys forcing mass civilian evacuation across northern zones' },
-      { factor: 'Regional power deterrence breakdown', weight: 0.21, description: 'Direct ballistic missile exchanges testing strategic air defense saturation' },
-      { factor: 'Civilian displacement surge', weight: 0.14, description: 'Rapid displacement exceeding 1.2 million citizens within weeks' }
+      { factor: 'Air strike density & strategic decapitation', weight: 0.32, description: 'Sustained strikes on command centers and precision weapons stockpiles in Beirut and Bekaa' },
+      { factor: 'Border artillery & rocket barrages', weight: 0.26, description: 'Sustained rocket and drone volleys targeting northern Israeli infrastructure' },
+      { factor: 'Ground combat mobilization', weight: 0.22, description: 'Direct ground contact along border villages and defensive fortified tunnels' },
+      { factor: 'Civilian displacement emergency', weight: 0.20, description: 'Rapid displacement exceeding 1.2 million citizens within weeks' }
     ],
     timeline: [
       { date: '2023-10-08', title: 'Cross-Border Shelling Initiated', description: 'Opening of northern front following outbreak of hostilities in Gaza.' },
       { date: '2024-09-17', title: 'Coordinated Communication Device Detonations', description: 'Synchronized sabotage operations dismantling insurgent communications array.' },
-      { date: '2024-09-27', title: 'Dahiyeh Headquarters Strike', description: 'Direct strike eliminating supreme leadership command structure in southern Beirut.' }
+      { date: '2024-09-27', title: 'Dahiyeh Headquarters Strike', description: 'Direct strike eliminating supreme leadership command structure in southern Beirut.' },
+      { date: '2026-09-24', title: 'Active Southern Front & Blue Line Standoff', description: 'Intensive frontline operations and international diplomatic efforts to enforce UNSC 1701.' }
     ],
-    economicImpact: 'Brent crude geopolitical risk premium fluctuations of $5-$12/barrel; severe collapse of Lebanese domestic services infrastructure.',
-    humanitarianImpact: 'Severe shelter shortages across Mount Lebanon, mass civilian evacuation orders, medical system strain.',
-    regionalImpact: 'Spillover fears across Jordan, Syria, and Iraq; potential closure of regional airspace to civil aviation.',
+    economicImpact: 'Brent crude geopolitical risk premium fluctuations of $5-$12/barrel; severe collapse of Lebanese domestic services and tourism revenue.',
+    humanitarianImpact: 'Severe shelter shortages across Mount Lebanon and Beirut, mass civilian evacuation notices, and hospitals running on emergency generator fuel.',
+    regionalImpact: 'Spillover fears across Syria and Iraq; widespread flight cancellations and diversion of commercial civil aviation corridors away from eastern Mediterranean.',
     sources: [
-      { name: 'UNIFIL Command Bulletins', publisher: 'United Nations Interim Force in Lebanon', publishedDate: '2024-09-22', type: 'multilateral', url: 'https://unifil.unmissions.org' },
-      { name: 'BBC World Service Dispatches', publisher: 'BBC News', publishedDate: '2024-09-23', type: 'wire', url: 'https://www.bbc.com/news' },
-      { name: 'Lebanese Ministry of Public Health', publisher: 'Government of Lebanon', publishedDate: '2024-09-24', type: 'official', url: 'https://www.moph.gov.lb' }
+      { name: 'UNIFIL Command Bulletins', publisher: 'United Nations Interim Force in Lebanon', publishedDate: '2026-09-24', type: 'multilateral', url: 'https://unifil.unmissions.org' },
+      { name: 'Reuters Middle East Geopolitical Wire', publisher: 'Reuters', publishedDate: '2026-09-24', type: 'wire', url: 'https://www.reuters.com' },
+      { name: 'Lebanese Ministry of Public Health Emergency Dispatch', publisher: 'Government of Lebanon', publishedDate: '2026-09-24', type: 'official', url: 'https://www.moph.gov.lb' }
     ],
     reportsDiffer: true,
     reportsDisagreementSummary: 'Official casualty assessments differ between local municipal health authorities and international monitoring bodies regarding combatant versus civilian proportions.',
     isDemo: true,
-    lastUpdated: '2026-09-23T18:00:00Z',
-    connectedCrisisIds: ['crisis-red-sea-chokepoint']
+    lastUpdated: '2026-09-24T08:50:00Z',
+    connectedCrisisIds: ['crisis-gaza-conflict-catastrophe', 'crisis-hormuz-strait-standoff', 'crisis-red-sea-chokepoint']
   },
 
-  // Sudan Famine Catastrophe
+  // Sudan Famine & Civil War Catastrophe
   {
     id: 'crisis-sudan-humanitarian',
-    title: 'Sudanese Armed Forces vs RSF Civil War & Famine Catastrophe',
+    title: 'Sudanese Armed Forces vs RSF Civil War & El Fasher Famine Emergency',
     category: 'humanitarian',
     subcategory: 'Refugee displacement',
     country: 'Sudan',
@@ -531,37 +623,128 @@ export const MOCK_CRISIS_EVENTS: CrisisEvent[] = [
     region: 'Africa',
     latitude: 15.5007,
     longitude: 32.5599,
-    date: '2023-04-15',
+    date: '2026-09-24',
     status: 'escalating',
     severity: 'critical',
-    riskIndicator: 0.94,
+    riskIndicator: 0.97,
     confidence: 'High',
     zoneClassification: 'highest_conflict_zone',
-    summary: 'Devastating national conflict between rival military generals across Khartoum, Darfur, and Kordofan triggering the world\'s largest civilian displacement and IPC Phase 5 catastrophic famine conditions.',
-    whyMonitored: 'Unprecedented scale of human suffering, complete collapse of public health systems, ethnic-targeted violence in Darfur, and risk of destabilizing seven bordering nations.',
+    summary: 'Devastating national conflict between rival military generals across Khartoum, Darfur, and Kordofan triggering the world\'s largest internal displacement catastrophe, acute siege of El Fasher, and verified IPC Phase 5 famine.',
+    whyMonitored: 'Unprecedented scale of human suffering, complete collapse of public health systems, ethnic-targeted atrocities in Darfur, and imminent collapse of statehood destabilizing seven neighboring African nations.',
     contributingFactors: [
-      { factor: 'Active urban combat & heavy ordnance', weight: 0.28, description: 'Indiscriminate artillery and drone warfare in populated urban centers' },
-      { factor: 'Severe food insecurity (IPC 5)', weight: 0.27, description: 'Over 25 million people facing acute hunger; verified famine declared in Zamzam camp' },
-      { factor: 'Aid blockage & humanitarian access denial', weight: 0.22, description: 'Deliberate impediment of cross-border and cross-line aid convoys' },
-      { factor: 'Regional proxy weapon supplies', weight: 0.14, description: 'External illicit arms shipments sustaining combatant operations' }
+      { factor: 'Active urban combat & siege artillery', weight: 0.30, description: 'Sustained artillery, drone strikes, and street-level engagements in El Fasher and Khartoum' },
+      { factor: 'Severe food insecurity (IPC 5 Famine)', weight: 0.28, description: 'Over 25 million people facing crisis hunger; confirmed famine in Zamzam displacement camp' },
+      { factor: 'Aid blockage & cross-border impediment', weight: 0.24, description: 'Intermittent denial of clearance for Adre border aid convoys from Chad' },
+      { factor: 'External proxy arms supply flows', weight: 0.18, description: 'Foreign clandestine logistical channels replenishing heavy weaponry and attack drones' }
     ],
     timeline: [
       { date: '2023-04-15', title: 'Hostilities Erupt in Khartoum', description: 'Clashes between regular military forces and paramilitary units paralyze capital.' },
-      { date: '2023-11-04', title: 'Fall of Western Darfur Regional Capitals', description: 'Paramilitary advances marked by reports of widespread ethnically targeted atrocities.' },
-      { date: '2024-08-01', title: 'Official Famine Declaration in Zamzam', description: 'IPC Famine Review Committee confirms famine criteria exceeded in North Darfur camp.' }
+      { date: '2024-08-01', title: 'Official Famine Declaration in Zamzam', description: 'IPC Famine Review Committee confirms famine criteria exceeded in North Darfur camp.' },
+      { date: '2025-04-10', title: 'UNSC Resolution on El Fasher Siege', description: 'Security Council demands immediate halt to encirclement of Darfur capital.' },
+      { date: '2026-09-24', title: 'Persistent Frontline Clashes & Aid Standoff', description: 'WFP and MSF emergency relief struggling against localized blockades and rains.' }
     ],
-    economicImpact: 'Total destruction of domestic banking, agriculture, and formal industrial sectors; severe inflation exceeding 300%.',
-    humanitarianImpact: 'Over 10 million internally displaced and 2 million cross-border refugees into Chad, South Sudan, and Egypt.',
-    regionalImpact: 'Extreme strain on refugee camp resources in eastern Chad; instability spreading across Sahelian and Central African corridors.',
+    economicImpact: 'Total destruction of domestic banking, agriculture, and formal industrial sectors; hyperinflation exceeding 400%; collapse of Sudanese pound.',
+    humanitarianImpact: 'Over 10.5 million internally displaced persons (IDPs) and 2.5 million cross-border refugees into Chad, South Sudan, and Egypt.',
+    regionalImpact: 'Extreme strain on refugee facilities in eastern Chad; destabilization of Sahelian security architecture; Red Sea port pressures at Port Sudan.',
     sources: [
-      { name: 'UN World Food Programme (WFP)', publisher: 'United Nations', publishedDate: '2024-08-14', type: 'multilateral', url: 'https://www.wfp.org' },
-      { name: 'Integrated Food Security Phase Classification', publisher: 'IPC Global Support Unit', publishedDate: '2024-08-01', type: 'academic', url: 'https://www.ipcinfo.org' },
-      { name: 'MSF Doctors Without Borders Field Reports', publisher: 'Médecins Sans Frontières', publishedDate: '2024-09-05', type: 'ngo', url: 'https://www.msf.org' }
+      { name: 'UN World Food Programme (WFP) Dispatches', publisher: 'United Nations', publishedDate: '2026-09-23', type: 'multilateral', url: 'https://www.wfp.org' },
+      { name: 'Integrated Food Security Phase Classification', publisher: 'IPC Global Support Unit', publishedDate: '2026-09-20', type: 'academic', url: 'https://www.ipcinfo.org' },
+      { name: 'MSF Doctors Without Borders Field Situation', publisher: 'Médecins Sans Frontières', publishedDate: '2026-09-24', type: 'ngo', url: 'https://www.msf.org' }
     ],
     reportsDiffer: false,
     isDemo: true,
-    lastUpdated: '2026-09-21T11:00:00Z',
-    connectedCrisisIds: ['crisis-sahel-political-instability']
+    lastUpdated: '2026-09-24T07:40:00Z',
+    connectedCrisisIds: ['crisis-horn-of-africa-somalia-ethiopia', 'crisis-sahel-political-instability']
+  },
+
+  // Horn of Africa Red Sea Access & Somaliland Standoff
+  {
+    id: 'crisis-horn-of-africa-somalia-ethiopia',
+    title: 'Horn of Africa Red Sea Access Standoff & Regional Border Security Tensions',
+    category: 'political',
+    subcategory: 'Territorial disputes',
+    country: 'Somalia',
+    countryCode: 'SO',
+    region: 'Africa',
+    latitude: 9.5624,
+    longitude: 44.0770,
+    date: '2026-09-24',
+    status: 'active',
+    severity: 'high',
+    riskIndicator: 0.81,
+    confidence: 'High',
+    zoneClassification: 'strategic_chokepoint',
+    summary: 'Mounting geopolitical standoff in the Horn of Africa triggered by Ethiopia\'s Memorandum of Understanding with the self-declared Republic of Somaliland for a 20-kilometer leased coastline on the Gulf of Aden in exchange for diplomatic recognition, sparking deep constitutional and sovereign pushback from Somalia, defense pacts with Egypt, and troop redeployments.',
+    whyMonitored: 'Critical juncture linking the Red Sea and Gulf of Aden maritime commerce corridor with fragile Horn of Africa domestic peace accords (Tigray Pretoria agreement, Amhara Fano rebellion, and counter-Al-Shabaab operations).',
+    contributingFactors: [
+      { factor: 'Sovereignty & diplomatic contestation', weight: 0.34, description: 'Somali federal government declaring the Somaliland MoU null and void' },
+      { factor: 'Bilateral military defense pacts', weight: 0.28, description: 'Egypt-Somalia bilateral defense treaty and Egyptian deployment of troops/weapons to Mogadishu' },
+      { factor: 'Maritime naval ambition friction', weight: 0.22, description: 'Ethiopian landlocked strategic imperative to secure autonomous naval port access on the Red Sea' },
+      { factor: 'Insurgent opportunism', weight: 0.16, description: 'Al-Shabaab exploiting nationalist mobilization to expand rural recruitment across southern Somalia' }
+    ],
+    timeline: [
+      { date: '2024-01-01', title: 'Ethiopia-Somaliland MoU Signed', description: 'Addis Ababa and Hargeisa sign agreement granting naval and commercial port access.' },
+      { date: '2024-08-14', title: 'Egypt-Somalia Defense Pact', description: 'Cairo and Mogadishu ratify military cooperation agreement including military aircraft shipments.' },
+      { date: '2025-07-20', title: 'Ankara Mediation Talks Rounds I & II', description: 'Turkish foreign ministry convenes delegations to mediate maritime commercial rights.' },
+      { date: '2026-09-24', title: 'Ongoing High-Alert Border Posture', description: 'Troop realignments along the Somali border and African Union AUSSOM transition monitoring.' }
+    ],
+    economicImpact: 'Heightened freight insurance risk in Gulf of Aden approaches; uncertainty regarding Berbera Port terminal investments ($442M DP World expansion).',
+    humanitarianImpact: 'Risk of disrupting food transport routes for millions of drought-affected pastoralists in the Ogaden and Somali regions.',
+    regionalImpact: 'Polarization between Cairo-Mogadishu and Addis Ababa alliances; potential impact on the Grand Ethiopian Renaissance Dam (GERD) dispute.',
+    sources: [
+      { name: 'African Union Peace and Security Council Communiqués', publisher: 'African Union', publishedDate: '2026-09-22', type: 'multilateral', url: 'https://www.peaceau.org' },
+      { name: 'International Crisis Group Horn of Africa Briefing', publisher: 'Crisis Group', publishedDate: '2026-09-19', type: 'academic', url: 'https://www.crisisgroup.org' },
+      { name: 'Reuters East Africa Bureau', publisher: 'Reuters', publishedDate: '2026-09-24', type: 'wire', url: 'https://www.reuters.com' }
+    ],
+    reportsDiffer: false,
+    isDemo: true,
+    lastUpdated: '2026-09-24T08:15:00Z',
+    connectedCrisisIds: ['crisis-sudan-humanitarian', 'crisis-red-sea-chokepoint']
+  },
+
+  // European Critical Infrastructure Hybrid Warfare
+  {
+    id: 'crisis-europe-hybrid-warfare',
+    title: 'European Critical Infrastructure Hybrid Warfare, Baltic Sea Sabotage & GPS Spoofing',
+    category: 'military',
+    subcategory: 'Hybrid & cyber warfare',
+    country: 'Baltic Sea / European Union',
+    countryCode: 'EE',
+    region: 'Europe',
+    latitude: 56.5000,
+    longitude: 20.0000,
+    date: '2026-09-24',
+    status: 'escalating',
+    severity: 'high',
+    riskIndicator: 0.87,
+    confidence: 'High',
+    zoneClassification: 'strategic_chokepoint',
+    summary: 'Sub-threshold hybrid campaign targeting European critical infrastructure, characterized by mysterious severing of undersea fiber-optic and power cables in the Baltic Sea (C-Lion1, EstLink), pervasive electronic GPS jamming disrupting civil aviation across Poland and the Baltic, shadow-fleet maritime reconnaissance, and cyber incursions against water and railway utilities.',
+    whyMonitored: 'Tests NATO Article 5 collective defense thresholds below traditional kinetic warfare; threatens European digital financial backbones, interconnector power grids, and aviation flight safety.',
+    contributingFactors: [
+      { factor: 'Undersea subsea cable & pipeline severing', weight: 0.35, description: 'Commercial anchor dragging incidents disabling data and energy interconnectors' },
+      { factor: 'Pervasive GNSS / GPS electronic jamming', weight: 0.28, description: 'High-power jamming transmitters in Kaliningrad disabling navigation for thousands of civilian flights' },
+      { factor: 'Shadow-fleet unflagged tanker proliferation', weight: 0.21, description: 'Uninsured aging oil tankers operating without AIS transponders transiting Baltic straits' },
+      { factor: 'Industrial control system cyber probes', weight: 0.16, description: 'Reconnaissance against German, Polish, and Nordic rail signaling and municipal water plants' }
+    ],
+    timeline: [
+      { date: '2023-10-08', title: 'Balticconnector Pipeline Anchor Severing', description: 'Gas pipeline and telecom cable between Finland and Estonia ruptured by commercial vessel.' },
+      { date: '2024-11-18', title: 'C-Lion1 & BCS Fiber Cables Cut', description: 'Simultaneous failure of undersea cables linking Finland, Germany, Sweden, and Lithuania.' },
+      { date: '2025-06-12', title: 'NATO Baltic Sentry Operation', description: 'Alliance deploys maritime patrol aircraft and mine-countermeasure ships to guard critical seabed links.' },
+      { date: '2026-09-24', title: 'Ongoing Hybrid Alert & Drone Surveillance', description: 'Continuous European intelligence coordination and enhanced naval escort for repair vessels.' }
+    ],
+    economicImpact: 'Billions invested in subsea seabed monitoring sensor networks; rerouting of telecommunications traffic through redundant terrestrial corridors.',
+    humanitarianImpact: 'Direct risk to commercial civil aviation safety in Baltic flight corridors; localized vulnerability of winter district heating and power interconnectors.',
+    regionalImpact: 'Accelerated Nordic-Baltic defense integration; creation of EU Cyber Reserve and NATO Critical Undersea Infrastructure Coordination Cell.',
+    sources: [
+      { name: 'NATO Critical Undersea Infrastructure Cell Dispatches', publisher: 'NATO Allied Command', publishedDate: '2026-09-23', type: 'official', url: 'https://www.nato.int' },
+      { name: 'Finnish National Bureau of Investigation (KRP)', publisher: 'Poliisi Finland', publishedDate: '2026-09-20', type: 'official', url: 'https://poliisi.fi' },
+      { name: 'European Union Agency for Cybersecurity (ENISA)', publisher: 'EU ENISA', publishedDate: '2026-09-24', type: 'multilateral', url: 'https://www.enisa.europa.eu' }
+    ],
+    reportsDiffer: false,
+    isDemo: true,
+    lastUpdated: '2026-09-24T08:00:00Z',
+    connectedCrisisIds: ['crisis-ukr-frontline']
   },
 
   // Taiwan Strait & Semiconductor Security

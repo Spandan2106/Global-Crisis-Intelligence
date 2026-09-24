@@ -5,9 +5,10 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { MOCK_CRISIS_EVENTS } from './data/mockCrises';
-import { CrisisEvent, FilterState } from './types/crisis';
+import { CrisisEvent, FilterState, TimelineFilterMode } from './types/crisis';
 import { Header, DashboardMode } from './components/Header';
 import { GlobalStatsBar } from './components/GlobalStatsBar';
+import { LiveIntelligenceFeed } from './components/LiveIntelligenceFeed';
 import { FilterPanel } from './components/FilterPanel';
 import { RealEarthGlobeView } from './components/RealEarthGlobeView';
 import { GoogleEarthView } from './components/GoogleEarthView';
@@ -21,6 +22,25 @@ import { TimelineControl } from './components/TimelineControl';
 
 // Geographic Coordinates Lookup for Smooth Camera Flight
 const SEARCH_COORDINATES: Record<string, { lat: number; lng: number; zoom: number }> = {
+  hormuz: { lat: 26.5667, lng: 56.2500, zoom: 6.5 },
+  'strait of hormuz': { lat: 26.5667, lng: 56.2500, zoom: 6.5 },
+  gaza: { lat: 31.4167, lng: 34.3333, zoom: 8.0 },
+  palestine: { lat: 31.4167, lng: 34.3333, zoom: 7.5 },
+  israel: { lat: 31.7683, lng: 35.2137, zoom: 7.0 },
+  lebanon: { lat: 33.8547, lng: 35.8623, zoom: 7.0 },
+  beirut: { lat: 33.8938, lng: 35.5018, zoom: 8.0 },
+  sudan: { lat: 15.5007, lng: 32.5599, zoom: 5.5 },
+  khartoum: { lat: 15.5007, lng: 32.5599, zoom: 6.5 },
+  darfur: { lat: 13.6288, lng: 25.3549, zoom: 6.0 },
+  'horn of africa': { lat: 9.5624, lng: 44.0770, zoom: 5.5 },
+  somalia: { lat: 5.1521, lng: 46.1996, zoom: 5.5 },
+  somaliland: { lat: 9.5624, lng: 44.0770, zoom: 6.5 },
+  ethiopia: { lat: 9.1450, lng: 40.4897, zoom: 5.5 },
+  baltic: { lat: 56.5000, lng: 20.0000, zoom: 5.5 },
+  'baltic sea': { lat: 56.5000, lng: 20.0000, zoom: 5.5 },
+  'hybrid war': { lat: 56.5000, lng: 20.0000, zoom: 5.5 },
+  'europe hybrid': { lat: 56.5000, lng: 20.0000, zoom: 5.5 },
+  iran: { lat: 32.4279, lng: 53.6880, zoom: 5.0 },
   india: { lat: 20.5937, lng: 78.9629, zoom: 4.5 },
   delhi: { lat: 28.6139, lng: 77.2090, zoom: 6.5 },
   mumbai: { lat: 19.0760, lng: 72.8777, zoom: 6.5 },
@@ -32,14 +52,12 @@ const SEARCH_COORDINATES: Record<string, { lat: number; lng: number; zoom: numbe
   'south china sea': { lat: 12.0000, lng: 114.0000, zoom: 5.0 },
   taiwan: { lat: 23.6978, lng: 120.9605, zoom: 6.5 },
   'red sea': { lat: 20.0000, lng: 38.5000, zoom: 5.0 },
-  sudan: { lat: 15.5007, lng: 32.5599, zoom: 5.0 },
   'united states': { lat: 37.0902, lng: -95.7129, zoom: 4.0 },
   usa: { lat: 37.0902, lng: -95.7129, zoom: 4.0 },
   europe: { lat: 50.0000, lng: 15.0000, zoom: 4.0 },
   germany: { lat: 51.1657, lng: 10.4515, zoom: 5.5 },
   egypt: { lat: 26.8206, lng: 30.8025, zoom: 5.0 },
   china: { lat: 35.8617, lng: 104.1954, zoom: 4.0 },
-  lebanon: { lat: 33.8547, lng: 35.8623, zoom: 7.0 },
   yemen: { lat: 15.5527, lng: 48.5164, zoom: 5.5 },
   switzerland: { lat: 46.8182, lng: 8.2275, zoom: 6.5 },
   singapore: { lat: 1.3521, lng: 103.8198, zoom: 8.0 }
@@ -50,11 +68,11 @@ export default function App() {
   const [currentMode, setCurrentMode] = useState<DashboardMode>('global');
 
   // Geographic Dual Engine: MODE A (2D Map / Google Maps) vs MODE B (3D Earth Globe)
-  // Default is 'earth' as requested by the primary objective
   const [earthMode, setEarthMode] = useState<'map' | 'earth'>('earth');
 
-  // Selected Items
-  const [selectedEvent, setSelectedEvent] = useState<CrisisEvent | null>(MOCK_CRISIS_EVENTS[10]);
+  // Selected Items - Default focus on Strait of Hormuz conflict
+  const defaultEvent = MOCK_CRISIS_EVENTS.find(e => e.id === 'crisis-hormuz-strait-standoff') || MOCK_CRISIS_EVENTS[0];
+  const [selectedEvent, setSelectedEvent] = useState<CrisisEvent | null>(defaultEvent);
   const [selectedCountryCode, setSelectedCountryCode] = useState<string | null>(null);
 
   // Geographic Search Fly-To Target
@@ -78,8 +96,11 @@ export default function App() {
     };
   }, []);
 
-  // Time Machine (1950 - 2026)
+  // Timeline Scope Mode: 'today' (DEFAULT) | '2year' | 'total' | 'custom'
+  // By default, it will only show today's data, the ongoing conflicts or today's data
+  const [timelineMode, setTimelineMode] = useState<TimelineFilterMode>('today');
   const [currentYear, setCurrentYear] = useState<number>(2026);
+  const [exactYearOnly, setExactYearOnly] = useState<boolean>(false);
   const [isPlayingTimeline, setIsPlayingTimeline] = useState<boolean>(false);
 
   // Search & Filters State
@@ -142,10 +163,12 @@ export default function App() {
         ...prev,
         categories: { political: true, military: true, economic: true, financial: true, humanitarian: true }
       }));
+    } else if (mode === 'history') {
+      setTimelineMode('total');
     }
   };
 
-  // Filter events according to all active criteria, zone classification, and timeline year
+  // Filter events according to timeline mode (Today vs 2-Year vs Total vs Custom), categories, and status
   const filteredEvents = useMemo(() => {
     return MOCK_CRISIS_EVENTS.filter((ev) => {
       // 1. Search filter
@@ -187,23 +210,50 @@ export default function App() {
       // 6. Region filter
       if (filters.region !== 'All' && ev.region !== filters.region) return false;
 
-      // 7. Chronological Year filter (Time Machine from 1950)
+      // 7. Timeline filter logic:
       const evYear = new Date(ev.date).getFullYear();
-      if (evYear > currentYear) return false;
+
+      if (timelineMode === 'today') {
+        // BY DEFAULT: Only show today's data, ongoing active & escalating conflicts
+        const isOngoing = ev.status === 'active' || ev.status === 'escalating';
+        const isContemporary = evYear >= 2024;
+        return isOngoing && isContemporary;
+      } else if (timelineMode === '2year') {
+        // CURRENT 2-YEAR TIMELINE: 2024 to 2026
+        return evYear >= 2024 && evYear <= 2026;
+      } else if (timelineMode === 'total') {
+        // TOTAL TIMELINE: 1950 to today
+        return evYear >= 1950 && evYear <= 2026;
+      } else if (timelineMode === 'custom') {
+        // USER CUSTOM SPECIFIED YEAR
+        if (exactYearOnly) {
+          return evYear === currentYear;
+        } else {
+          return evYear <= currentYear;
+        }
+      }
 
       return true;
     });
-  }, [filters, currentYear]);
+  }, [filters, timelineMode, currentYear, exactYearOnly]);
 
   // Handle Event Fly-to request
   const handleFlyToEvent = (event: CrisisEvent) => {
     setSelectedEvent(event);
-    setSearchFlyToTarget({ lat: event.latitude, lng: event.longitude, zoom: 5.5 });
+    setSearchFlyToTarget({ lat: event.latitude, lng: event.longitude, zoom: 6.0 });
+  };
+
+  // Fly to conflict from Live Intelligence Feed
+  const handleSelectConflictFromWire = (conflictId: string) => {
+    const target = MOCK_CRISIS_EVENTS.find(e => e.id === conflictId);
+    if (target) {
+      handleFlyToEvent(target);
+    }
   };
 
   return (
     <div className="flex flex-col h-screen w-screen bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
-      {/* Google Maps Quota Warning Banner (Tier 2 Client-Side Quota Defense) */}
+      {/* Google Maps Quota Warning Banner */}
       {isGmpQuotaExceeded && (
         <div className="bg-amber-50 border-b border-amber-200 text-amber-900 px-4 py-2 text-xs md:text-sm text-center sticky top-0 z-50 shadow-sm font-sans flex items-center justify-center gap-1">
           <span>
@@ -221,7 +271,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Top Header Navigation with [ MAP ] [ 3D EARTH ] Switcher */}
+      {/* Top Header Navigation */}
       <Header
         currentMode={currentMode}
         onSelectMode={handleSelectMode}
@@ -236,6 +286,12 @@ export default function App() {
         onToggleFilterSidebar={() => setIsFilterSidebarOpen(!isFilterSidebarOpen)}
         earthMode={earthMode}
         onToggleEarthMode={(mode) => setEarthMode(mode)}
+      />
+
+      {/* Real-Time Live Intelligence & News Wire (Continuously Fetches & Tickers) */}
+      <LiveIntelligenceFeed
+        onSelectConflict={handleSelectConflictFromWire}
+        allEvents={MOCK_CRISIS_EVENTS}
       />
 
       {/* Global Intelligence Metrics Bar */}
@@ -260,7 +316,7 @@ export default function App() {
           ) : currentMode === 'scenarios' ? (
             <ScenarioAnalysisView />
           ) : earthMode === 'earth' ? (
-            /* MODE B: TRUE 3D GEOGRAPHIC EARTH (WGS84 Ellipsoid, Real Terrain Elevation DEM, Satellite & Hybrid Tiles) */
+            /* MODE B: TRUE 3D GEOGRAPHIC EARTH */
             <RealEarthGlobeView
               events={filteredEvents}
               selectedEvent={selectedEvent}
@@ -292,14 +348,22 @@ export default function App() {
         )}
       </div>
 
-      {/* Bottom Historical Time Machine Control (1950 - 2026) */}
+      {/* Bottom Timeline Machine (Default: Today's Ongoing Data | 2-Year: 2024-2026 | Total: 1950-Today | Custom Year) */}
       {currentMode !== 'markets' && currentMode !== 'network' && currentMode !== 'scenarios' && (
         <TimelineControl
+          timelineMode={timelineMode}
+          onTimelineModeChange={setTimelineMode}
           currentYear={currentYear}
-          onYearChange={setCurrentYear}
+          onYearChange={(yr) => {
+            setCurrentYear(yr);
+            if (timelineMode === 'today') setTimelineMode('custom');
+          }}
+          exactYearOnly={exactYearOnly}
+          onToggleExactYearOnly={() => setExactYearOnly(!exactYearOnly)}
           isPlaying={isPlayingTimeline}
           onTogglePlay={() => setIsPlayingTimeline(!isPlayingTimeline)}
-          events={MOCK_CRISIS_EVENTS}
+          eventsCount={filteredEvents.length}
+          totalEventsCount={MOCK_CRISIS_EVENTS.length}
         />
       )}
 

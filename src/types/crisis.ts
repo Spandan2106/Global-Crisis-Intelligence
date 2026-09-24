@@ -159,6 +159,33 @@ export interface NetworkEdge {
   strength: 'high' | 'medium' | 'low';
 }
 
+export type TimelineFilterMode = 'today' | '2year' | 'total' | 'custom';
+
+export interface LiveNewsItem {
+  id: string;
+  timestamp: string;
+  timeAgo?: string;
+  headline: string;
+  source: string;
+  region: string;
+  conflictId?: string;
+  category: 'kinetic' | 'maritime' | 'humanitarian' | 'hybrid' | 'diplomatic';
+  urgency: 'critical' | 'high' | 'medium';
+  details: string;
+  verified: boolean;
+}
+
+export interface ConflictLiveTelemetry {
+  conflictId: string;
+  name: string;
+  status: string;
+  riskIndex: number;
+  lastUpdated: string;
+  trend: 'escalating' | 'stable' | 'de-escalating';
+  activeThreatMetric: string;
+  source: string;
+}
+
 export interface ScenarioResult {
   evidence: string[];
   analysis: string;

@@ -82,10 +82,128 @@ export const CRISIS_NETWORK_NODES: NetworkNode[] = [
     riskIndicator: 0.94,
     description: 'Acute IPC Phase 5 food insecurity, healthcare collapse, and cross-border refugee flows.',
     country: 'Sudan / Levant'
+  },
+  {
+    id: 'node-hormuz',
+    label: 'Strait of Hormuz Naval Standoff',
+    category: 'military',
+    riskIndicator: 0.93,
+    description: 'Threats to 20.5M bpd oil flows, GPS spoofing, and tanker boardings in Persian Gulf entrance.',
+    country: 'Strait of Hormuz / Iran'
+  },
+  {
+    id: 'node-gaza',
+    label: 'Gaza Urban Hostilities & Siege',
+    category: 'military',
+    riskIndicator: 0.98,
+    description: 'High-intensity conflict, severe humanitarian blockades, and urban destruction.',
+    country: 'Palestine / Gaza'
+  },
+  {
+    id: 'node-lebanon',
+    label: 'Lebanon Blue Line Escalation',
+    category: 'military',
+    riskIndicator: 0.95,
+    description: 'Cross-border artillery, airstrikes, and mass displacement across southern Lebanon.',
+    country: 'Lebanon'
+  },
+  {
+    id: 'node-sudan',
+    label: 'Sudan Civil War & Darfur Famine',
+    category: 'humanitarian',
+    riskIndicator: 0.97,
+    description: 'SAF vs RSF conflict, El Fasher siege, and IPC Phase 5 famine in Zamzam camp.',
+    country: 'Sudan'
+  },
+  {
+    id: 'node-horn',
+    label: 'Horn of Africa Maritime Access Standoff',
+    category: 'political',
+    riskIndicator: 0.81,
+    description: 'Ethiopia-Somaliland Berbera port MoU triggering regional defense pacts and border alert.',
+    country: 'Somalia / Ethiopia'
+  },
+  {
+    id: 'node-hybrid',
+    label: 'Europe Hybrid Warfare & Cable Sabotage',
+    category: 'military',
+    riskIndicator: 0.87,
+    description: 'Baltic subsea cable ruptures, civilian aviation GPS jamming, and utility cyber probes.',
+    country: 'Baltic Sea / EU'
   }
 ];
 
 export const CRISIS_NETWORK_EDGES: NetworkEdge[] = [
+  {
+    id: 'e-gaza-conflict',
+    source: 'node-gaza',
+    target: 'node-conflict',
+    label: 'Epicentral Levant catalyst',
+    strength: 'high'
+  },
+  {
+    id: 'e-gaza-humanitarian',
+    source: 'node-gaza',
+    target: 'node-humanitarian-strain',
+    label: 'IPC Phase 5 catastrophic hunger',
+    strength: 'high'
+  },
+  {
+    id: 'e-gaza-lebanon',
+    source: 'node-gaza',
+    target: 'node-lebanon',
+    label: 'Frontline synchronization',
+    strength: 'high'
+  },
+  {
+    id: 'e-lebanon-conflict',
+    source: 'node-lebanon',
+    target: 'node-conflict',
+    label: 'Cross-border escalation',
+    strength: 'high'
+  },
+  {
+    id: 'e-hormuz-oil',
+    source: 'node-hormuz',
+    target: 'node-oil-supply',
+    label: '21% global crude transit exposure',
+    strength: 'high'
+  },
+  {
+    id: 'e-hormuz-chokepoint',
+    source: 'node-hormuz',
+    target: 'node-maritime-chokepoint',
+    label: 'Persian Gulf naval interdiction',
+    strength: 'high'
+  },
+  {
+    id: 'e-sudan-humanitarian',
+    source: 'node-sudan',
+    target: 'node-humanitarian-strain',
+    label: '10.5M IDPs & famine declaration',
+    strength: 'high'
+  },
+  {
+    id: 'e-horn-chokepoint',
+    source: 'node-horn',
+    target: 'node-maritime-chokepoint',
+    label: 'Gulf of Aden naval access dispute',
+    strength: 'medium'
+  },
+  {
+    id: 'e-hybrid-freight',
+    source: 'node-hybrid',
+    target: 'node-freight-rates',
+    label: 'Baltic maritime shadow-fleet risk',
+    strength: 'medium'
+  },
+  {
+    id: 'e-hybrid-volatility',
+    source: 'node-hybrid',
+    target: 'node-market-volatility',
+    label: 'Critical subsea infrastructure disruption',
+    strength: 'medium'
+  },
   {
     id: 'e1',
     source: 'node-conflict',

@@ -1,73 +1,136 @@
 import React from 'react';
 import { CrisisEvent } from '../types/crisis';
-import { ShieldAlert, AlertTriangle, Activity, DollarSign, Users, TrendingUp } from 'lucide-react';
+import { 
+  ShieldAlert, 
+  Flame, 
+  TrendingUp, 
+  Users, 
+  RefreshCw, 
+  Clock,
+  Radio
+} from 'lucide-react';
 
 interface GlobalStatsBarProps {
   events: CrisisEvent[];
-  onFilterCategory?: (category: string) => void;
+  pipelines?: {
+    markets?: { status: string; lastSuccessfulUpdate: string; source?: string };
+    news?: { status: string; lastSuccessfulUpdate: string; source?: string };
+    geopolitics?: { status: string; lastSuccessfulUpdate: string; source?: string };
+    economy?: { status: string; lastSuccessfulUpdate: string; source?: string };
+    map?: { status: string; provider?: string };
+  };
+  isRefreshing?: boolean;
+  onRefreshNow?: () => void;
+  isDemoMode?: boolean;
+  onToggleDemoMode?: () => void;
+  nextUpdateSeconds?: number;
 }
 
-export const GlobalStatsBar: React.FC<GlobalStatsBarProps> = ({ events }) => {
-  const activeCrisesCount = events.filter(e => e.status === 'active' || e.status === 'escalating').length;
-  const highRiskAreasCount = events.filter(e => e.riskIndicator >= 0.70).length;
-  const economicStressCount = events.filter(e => e.category === 'economic').length;
-  const activeConflictsCount = events.filter(e => e.category === 'military' && (e.status === 'active' || e.status === 'escalating')).length;
+export const GlobalStatsBar: React.FC<GlobalStatsBarProps> = ({ 
+  events,
+  pipelines,
+  isRefreshing = false,
+  onRefreshNow,
+  isDemoMode = false,
+  onToggleDemoMode,
+  nextUpdateSeconds,
+}) => {
+  const ongoingCount = events.filter(e => e.isOngoing || e.status === 'ongoing' || e.status === 'escalating' || e.status === 'active').length;
+  const conflictsCount = events.filter(e => e.category === 'conflict' || e.category === 'military').length;
+  const politicalCount = events.filter(e => e.category === 'political').length;
+  const economicCount = events.filter(e => e.category === 'economic' || e.category === 'financial').length;
   const humanitarianCount = events.filter(e => e.category === 'humanitarian').length;
-  const averageRisk = events.length > 0 
-    ? (events.reduce((acc, curr) => acc + curr.riskIndicator, 0) / events.length).toFixed(2)
-    : '0.00';
+
+  const formatTimeAgo = (isoString?: string) => {
+    if (!isoString) return 'Pending';
+    const diff = Math.floor((Date.now() - new Date(isoString).getTime()) / 1000);
+    if (diff < 10) return 'Just now';
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    return `${Math.floor(diff / 3600)}h ago`;
+  };
 
   return (
-    <div className="w-full bg-slate-950/80 backdrop-blur-md border-b border-slate-800/60 px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
-      {/* Metrics Row */}
-      <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-        <div className="flex items-center gap-2">
-          <Activity className="w-3.5 h-3.5 text-cyan-400" />
-          <span className="text-slate-400 uppercase text-[11px]">ACTIVE CRISES:</span>
-          <span className="text-slate-100 font-bold text-sm">{activeCrisesCount}</span>
+    <div className="w-full bg-[#111111] border-b border-[#303030] px-3 sm:px-4 py-1.5 flex flex-wrap items-center justify-between gap-3 text-xs font-mono select-none">
+      {/* Left: Summary Metrics per Part 24: ONGOING EVENTS, CONFLICTS, POLITICAL, ECONOMIC, HUMANITARIAN */}
+      <div className="flex flex-wrap items-center gap-3 sm:gap-5">
+        <div className="flex items-center gap-1.5 pr-3 border-r border-[#303030]">
+          <span className="text-[#707070] font-bold text-[10px] uppercase">SITUATION:</span>
+          <span className="text-[#E6E6E6] font-bold text-[11px]">{ongoingCount} ONGOING</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <ShieldAlert className="w-3.5 h-3.5 text-red-400" />
-          <span className="text-slate-400 uppercase text-[11px]">HIGH-RISK AREAS:</span>
-          <span className="text-red-400 font-bold text-sm">{highRiskAreasCount}</span>
+        <div className="flex items-center gap-1 text-[11px]">
+          <Flame className="w-3 h-3 text-[#dc2626]" />
+          <span className="text-[#707070]">CONFLICTS:</span>
+          <span className="text-[#E6E6E6] font-bold">{conflictsCount}</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <AlertTriangle className="w-3.5 h-3.5 text-orange-400" />
-          <span className="text-slate-400 uppercase text-[11px]">ACTIVE CONFLICTS:</span>
-          <span className="text-orange-400 font-bold text-sm">{activeConflictsCount}</span>
+        <div className="flex items-center gap-1 text-[11px]">
+          <span className="w-2 h-2 rounded-full bg-[#94a3b8]" />
+          <span className="text-[#707070]">POLITICAL:</span>
+          <span className="text-[#E6E6E6] font-bold">{politicalCount}</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <DollarSign className="w-3.5 h-3.5 text-blue-400" />
-          <span className="text-slate-400 uppercase text-[11px]">ECONOMIC STRESS:</span>
-          <span className="text-blue-400 font-bold text-sm">{economicStressCount}</span>
+        <div className="flex items-center gap-1 text-[11px]">
+          <TrendingUp className="w-3 h-3 text-[#2563eb]" />
+          <span className="text-[#707070]">ECONOMIC:</span>
+          <span className="text-[#E6E6E6] font-bold">{economicCount}</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Users className="w-3.5 h-3.5 text-amber-400" />
-          <span className="text-slate-400 uppercase text-[11px]">HUMANITARIAN:</span>
-          <span className="text-amber-400 font-bold text-sm">{humanitarianCount}</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-          <span className="text-slate-400 uppercase text-[11px]">MARKET VOLATILITY (VIX):</span>
-          <span className="text-emerald-400 font-bold text-sm">15.42 <span className="text-[10px] text-emerald-500 font-normal">(-1.8%)</span></span>
+        <div className="flex items-center gap-1 text-[11px]">
+          <Users className="w-3 h-3 text-[#d97706]" />
+          <span className="text-[#707070]">HUMANITARIAN:</span>
+          <span className="text-[#E6E6E6] font-bold">{humanitarianCount}</span>
         </div>
       </div>
 
-      {/* Mini World Risk Heatmap Indicator */}
-      <div className="hidden xl:flex items-center gap-2.5 bg-slate-900/90 border border-slate-800 px-2.5 py-1 rounded-lg">
-        <span className="text-[10px] text-slate-400 uppercase">AVG GLOBAL RISK:</span>
-        <span className="text-slate-200 font-bold">{averageRisk}</span>
-        <div className="flex items-center gap-0.5 ml-1">
-          <div className="w-2.5 h-3 rounded-xs bg-emerald-500/80" title="Low Risk Zone" />
-          <div className="w-2.5 h-3 rounded-xs bg-blue-500/80" title="Moderate Risk Zone" />
-          <div className="w-2.5 h-3 rounded-xs bg-amber-500/80" title="Elevated Risk Zone" />
-          <div className="w-3.5 h-3 rounded-xs bg-red-500/90 animate-pulse" title="High Risk Critical Zone" />
+      {/* Right: Pipeline Live Status & Manual Sync */}
+      <div className="flex items-center gap-3 text-[10px]">
+        {/* Real-time Subsystem Feeds */}
+        <div className="hidden lg:flex items-center gap-2 border-r border-[#303030] pr-3 text-[#707070]">
+          <span className="flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#16a34a]" />
+            <span>MARKETS: {pipelines?.markets?.status || 'LIVE'}</span>
+          </span>
+          <span>·</span>
+          <span>NEWS: {formatTimeAgo(pipelines?.news?.lastSuccessfulUpdate)}</span>
+          <span>·</span>
+          <span>ECONOMY: {formatTimeAgo(pipelines?.economy?.lastSuccessfulUpdate)}</span>
         </div>
+
+        {/* Sync Countdown */}
+        {nextUpdateSeconds !== undefined && nextUpdateSeconds > 0 && !isDemoMode && (
+          <div className="hidden sm:flex items-center gap-1 text-[#707070]">
+            <Clock className="w-3 h-3" />
+            <span>Sync: <strong className="text-[#A0A0A0]">{Math.floor(nextUpdateSeconds / 60)}:{String(nextUpdateSeconds % 60).padStart(2, '0')}</strong></span>
+          </div>
+        )}
+
+        {/* Manual Refresh Button */}
+        {onRefreshNow && (
+          <button
+            onClick={onRefreshNow}
+            disabled={isRefreshing}
+            className="flex items-center gap-1 px-2.5 py-0.5 bg-[#1C1C1C] hover:bg-[#252525] text-[#E6E6E6] border border-[#303030] rounded font-bold transition-colors"
+          >
+            <RefreshCw className={`w-3 h-3 text-[#A0A0A0] ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>{isRefreshing ? 'SYNCING...' : 'REFRESH'}</span>
+          </button>
+        )}
+
+        {/* Live vs Demo Mode Toggle */}
+        {onToggleDemoMode && (
+          <button
+            onClick={onToggleDemoMode}
+            className={`px-2 py-0.5 rounded font-bold border transition-colors ${
+              isDemoMode
+                ? 'bg-[#d97706]/20 text-[#d97706] border-[#d97706]/40'
+                : 'bg-[#1C1C1C] text-[#707070] hover:text-[#A0A0A0] border-[#303030]'
+            }`}
+          >
+            {isDemoMode ? 'DEMO DATA' : 'LIVE'}
+          </button>
+        )}
       </div>
     </div>
   );

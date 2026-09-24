@@ -2,11 +2,8 @@ import React, { useState } from 'react';
 import { ScenarioResult } from '../types/crisis';
 import { 
   GitFork, 
-  Sparkles, 
   Send, 
   AlertTriangle, 
-  CheckCircle, 
-  HelpCircle, 
   TrendingUp, 
   TrendingDown, 
   Minus,
@@ -45,7 +42,6 @@ export const ScenarioAnalysisView: React.FC = () => {
       const data = await res.json();
       setScenarioData(data);
     } catch (err: unknown) {
-      console.error('Scenario error:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate scenario analysis');
     } finally {
       setLoading(false);
@@ -53,226 +49,144 @@ export const ScenarioAnalysisView: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full bg-slate-950 p-4 sm:p-6 overflow-y-auto font-mono text-slate-200">
-      {/* Notice & Disclaimer Header */}
-      <div className="mb-5 p-3 bg-purple-950/30 border border-purple-800/80 rounded-xl flex items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2 text-purple-300">
-          <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+    <div className="w-full h-full bg-[#111111] p-3 sm:p-5 overflow-y-auto font-mono text-[#E6E6E6] text-xs select-none">
+      {/* Disclaimer Header */}
+      <div className="mb-4 p-3 bg-[#151515] border border-[#303030] rounded flex items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2 text-[#A0A0A0]">
+          <AlertTriangle className="w-4 h-4 flex-shrink-0 text-[#d97706]" />
           <span>
-            <strong>Analytical Disclaimer:</strong> Scenario simulation explores plausible conditional trajectories. It does NOT forecast certainty or state that conflicts will occur.
+            <strong>ANALYTICAL DISCLAIMER:</strong> Scenario forecasts represent structured explorations of plausible transmission pathways derived from historical precedent. They do not constitute guaranteed predictions.
           </span>
         </div>
-        <span className="text-[10px] text-purple-400 font-bold hidden sm:inline">
-          PROBABILISTIC SCENARIO ENGINE
-        </span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Preset Templates & Input Box */}
-        <div className="space-y-4">
-          <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-2">
-              <GitFork className="w-4 h-4 text-purple-400" />
-              Scenario Inquiries
-            </h3>
+      {/* Preset Questions Grid */}
+      <div className="mb-4 space-y-1.5">
+        <span className="text-[10px] font-bold text-[#707070] uppercase tracking-wider block">
+          STRATEGIC SCENARIO PRESETS:
+        </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          {presetQuestions.map((q, idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                setSelectedPrompt(q);
+                handleRunScenario(q);
+              }}
+              className={`p-2 rounded text-left border transition-colors ${
+                selectedPrompt === q
+                  ? 'bg-[#1C1C1C] border-[#2563eb] text-[#E6E6E6] font-bold'
+                  : 'bg-[#151515] border-[#303030] text-[#A0A0A0] hover:text-[#E6E6E6] hover:bg-[#181818]'
+              }`}
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+      </div>
 
-            {/* Presets List */}
-            <div className="space-y-2">
-              {presetQuestions.map((q, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setSelectedPrompt(q);
-                    handleRunScenario(q);
-                  }}
-                  className={`w-full text-left p-2.5 rounded-xl border text-xs transition-colors ${
-                    selectedPrompt === q
-                      ? 'bg-purple-950/50 border-purple-700/80 text-purple-200 font-semibold'
-                      : 'bg-slate-950/60 border-slate-800/80 text-slate-300 hover:bg-slate-850'
-                  }`}
-                >
-                  {q}
-                </button>
+      {/* Custom Inquiry Bar */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (customQuestion.trim()) {
+            setSelectedPrompt(customQuestion);
+            handleRunScenario(customQuestion);
+          }
+        }}
+        className="mb-4 flex items-center gap-2"
+      >
+        <input
+          type="text"
+          value={customQuestion}
+          onChange={(e) => setCustomQuestion(e.target.value)}
+          placeholder="Formulate a custom scenario inquiry..."
+          className="flex-1 bg-[#151515] border border-[#303030] rounded px-3 py-1.5 text-xs text-[#E6E6E6] placeholder-[#707070] outline-none focus:border-[#2563eb]"
+        />
+        <button
+          type="submit"
+          disabled={loading || !customQuestion.trim()}
+          className="px-4 py-1.5 bg-[#2563eb] hover:bg-[#1d4ed8] disabled:bg-[#1C1C1C] text-white disabled:text-[#707070] rounded font-bold transition-colors"
+        >
+          {loading ? 'Evaluating...' : 'Run Scenario'}
+        </button>
+      </form>
+
+      {/* Scenario Output Matrix */}
+      {scenarioData && (
+        <div className="space-y-4">
+          {/* Section 1: Transmission Analysis */}
+          <div className="p-4 bg-[#151515] border border-[#303030] rounded space-y-2">
+            <span className="text-[10px] font-bold text-[#707070] uppercase block">
+              TRANSMISSION MECHANISM ANALYSIS:
+            </span>
+            <p className="text-xs text-[#A0A0A0] font-sans leading-relaxed">
+              {scenarioData.analysis}
+            </p>
+          </div>
+
+          {/* Section 2: Scenario Paths */}
+          <div className="space-y-2">
+            <span className="text-[10px] font-bold text-[#707070] uppercase block">
+              PLAUSIBLE PATHWAY PROJECTIONS:
+            </span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {scenarioData.scenarioPaths?.map((path, idx) => (
+                <div key={idx} className="p-3 bg-[#151515] border border-[#303030] rounded space-y-2">
+                  <div className="flex items-center justify-between pb-1 border-b border-[#252525]">
+                    <span className="font-bold text-[#E6E6E6] text-xs">{path.name}</span>
+                    <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded uppercase ${
+                      path.riskTrend === 'escalating' ? 'text-[#dc2626] bg-[#dc2626]/10' :
+                      path.riskTrend === 'de-escalating' ? 'text-[#16a34a] bg-[#16a34a]/10' :
+                      'text-[#A0A0A0] bg-[#202020]'
+                    }`}>
+                      {path.riskTrend}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#A0A0A0] font-sans leading-relaxed">
+                    {path.description}
+                  </p>
+                  <div>
+                    <span className="text-[9px] text-[#707070] font-bold uppercase block mb-1">
+                      Indicators to Monitor:
+                    </span>
+                    <ul className="text-[10px] text-[#707070] space-y-0.5 list-disc pl-3">
+                      {path.keyIndicatorsToMonitor?.map((ind, i) => (
+                        <li key={i}>{ind}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               ))}
             </div>
+          </div>
 
-            {/* Custom Scenario Prompt Form */}
-            <div className="mt-4 pt-4 border-t border-slate-800">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold block mb-1.5">
-                Custom Scenario Question:
+          {/* Section 3: Baseline Evidence & Uncertainties */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
+            <div className="p-3 bg-[#151515] border border-[#303030] rounded space-y-1.5">
+              <span className="text-[10px] font-bold text-[#16a34a] uppercase block">
+                Empirical Baseline Evidence:
               </span>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="e.g., What indicators could signal early de-escalation...?"
-                  value={customQuestion}
-                  onChange={(e) => setCustomQuestion(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && customQuestion.trim()) {
-                      setSelectedPrompt(customQuestion);
-                      handleRunScenario(customQuestion);
-                    }
-                  }}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-purple-400"
-                />
-                <button
-                  onClick={() => {
-                    if (customQuestion.trim()) {
-                      setSelectedPrompt(customQuestion);
-                      handleRunScenario(customQuestion);
-                    }
-                  }}
-                  disabled={loading || !customQuestion.trim()}
-                  className="px-3 py-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-lg transition-colors flex items-center justify-center"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-              </div>
+              <ul className="space-y-1 text-[#A0A0A0] list-disc pl-3">
+                {scenarioData.evidence?.map((ev, i) => (
+                  <li key={i}>{ev}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="p-3 bg-[#151515] border border-[#303030] rounded space-y-1.5">
+              <span className="text-[10px] font-bold text-[#d97706] uppercase block">
+                Critical Analytical Uncertainties:
+              </span>
+              <ul className="space-y-1 text-[#A0A0A0] list-disc pl-3">
+                {scenarioData.uncertainties?.map((un, i) => (
+                  <li key={i}>{un}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
-
-        {/* Right Column: Structured Gemini Breakdown */}
-        <div className="lg:col-span-2 space-y-4">
-          {loading ? (
-            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-12 text-center text-slate-400 space-y-3">
-              <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-sm font-semibold">Running Strategic Scenario Analysis...</p>
-              <p className="text-xs text-slate-500">Evaluating empirical evidence, transmission paths, and conditional forks</p>
-            </div>
-          ) : error ? (
-            <div className="bg-red-950/40 border border-red-800 rounded-2xl p-4 text-red-300 text-xs">
-              {error}
-            </div>
-          ) : scenarioData ? (
-            <div className="space-y-4">
-              {/* Evidence Section */}
-              <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl">
-                <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" />
-                  <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
-                    EVIDENCE (VERIFIED EMPIRICAL BASELINE)
-                  </h4>
-                </div>
-                <ul className="space-y-1.5 font-sans text-xs text-slate-300">
-                  {scenarioData.evidence.map((ev, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 flex-shrink-0" />
-                      <span>{ev}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Analysis Section */}
-              <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl">
-                <div className="flex items-center gap-2 mb-2">
-                  <FileText className="w-4 h-4 text-cyan-400" />
-                  <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">
-                    ANALYSIS (TRANSMISSION MECHANISMS)
-                  </h4>
-                </div>
-                <p className="font-sans text-xs text-slate-300 leading-relaxed">
-                  {scenarioData.analysis}
-                </p>
-              </div>
-
-              {/* Plausible Scenario Paths */}
-              <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl">
-                <div className="flex items-center gap-2 mb-3">
-                  <GitFork className="w-4 h-4 text-purple-400" />
-                  <h4 className="text-xs font-bold text-purple-400 uppercase tracking-wider">
-                    SCENARIO FORKS & KEY INDICATORS TO MONITOR
-                  </h4>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {scenarioData.scenarioPaths.map((path, idx) => {
-                    const isEsc = path.riskTrend === 'escalating';
-                    const isDeEsc = path.riskTrend === 'de-escalating';
-
-                    return (
-                      <div
-                        key={idx}
-                        className="p-3 bg-slate-950/70 border border-slate-800/80 rounded-xl flex flex-col justify-between"
-                      >
-                        <div>
-                          <div className="flex items-center justify-between mb-1.5">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                              Path {idx + 1}
-                            </span>
-                            <span
-                              className={`flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                                isEsc ? 'bg-red-950 text-red-400' :
-                                isDeEsc ? 'bg-emerald-950 text-emerald-400' :
-                                'bg-slate-800 text-slate-300'
-                              }`}
-                            >
-                              {isEsc ? <TrendingUp className="w-3 h-3" /> :
-                               isDeEsc ? <TrendingDown className="w-3 h-3" /> :
-                               <Minus className="w-3 h-3" />}
-                              <span className="capitalize">{path.riskTrend}</span>
-                            </span>
-                          </div>
-
-                          <h5 className="text-xs font-bold text-slate-200 mb-1">
-                            {path.name}
-                          </h5>
-                          <p className="text-[11px] text-slate-400 font-sans leading-relaxed mb-3">
-                            {path.description}
-                          </p>
-                        </div>
-
-                        <div className="pt-2 border-t border-slate-800/80">
-                          <span className="text-[9px] text-slate-500 uppercase font-semibold block mb-1">
-                            Monitor Indicators:
-                          </span>
-                          <ul className="space-y-1 text-[10px] text-slate-300 font-sans">
-                            {path.keyIndicatorsToMonitor.map((ind, i) => (
-                              <li key={i} className="flex items-center gap-1.5">
-                                <span className="w-1 h-1 rounded-full bg-cyan-400" />
-                                <span>{ind}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Uncertainties Section */}
-              <div className="bg-slate-900/80 border border-slate-800 p-4 rounded-2xl">
-                <div className="flex items-center gap-2 mb-2">
-                  <HelpCircle className="w-4 h-4 text-amber-400" />
-                  <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-                    UNCERTAINTIES & UNKNOWN VARIABLES
-                  </h4>
-                </div>
-                <ul className="space-y-1.5 font-sans text-xs text-slate-300">
-                  {scenarioData.uncertainties.map((unc, i) => (
-                    <li key={i} className="flex items-start gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0" />
-                      <span>{unc}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Explicit Disclaimer */}
-              <div className="text-[10px] text-slate-500 italic p-3 bg-slate-900/30 rounded-xl border border-slate-800/40">
-                {scenarioData.disclaimer}
-              </div>
-            </div>
-          ) : (
-            <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-8 text-center text-slate-400 space-y-2">
-              <Sparkles className="w-6 h-6 text-purple-400 mx-auto" />
-              <p className="text-xs">Select any preset question or enter a custom geopolitical inquiry to trigger strategic scenario analysis.</p>
-            </div>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 };
