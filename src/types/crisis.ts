@@ -175,6 +175,26 @@ export interface LiveNewsItem {
   verified: boolean;
 }
 
+export interface GlobalNewsReport {
+  id: string;
+  source: string; // e.g. 'BBC', 'CNN', 'Al Jazeera', 'Google News', 'YouTube', 'AP', 'NDTV', 'Reuters'
+  sourceLabel?: string;
+  headline: string;
+  summary: string;
+  timestamp: string;
+  timeAgo: string;
+  url: string;
+  category: 'Kinetic' | 'Maritime' | 'Diplomacy' | 'Economy' | 'Humanitarian' | 'Hybrid Warfare' | 'Breaking';
+  urgency: 'critical' | 'high' | 'medium';
+  conflictId?: string;
+  conflictName?: string;
+  region: string;
+  coordinates?: [number, number]; // [lat, lng]
+  videoUrl?: string; // YouTube or video dispatch embed
+  isLiveBroadcast?: boolean;
+  verified: boolean;
+}
+
 export interface ConflictLiveTelemetry {
   conflictId: string;
   name: string;

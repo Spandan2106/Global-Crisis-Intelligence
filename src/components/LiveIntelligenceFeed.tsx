@@ -22,11 +22,13 @@ import { LiveNewsItem, ConflictLiveTelemetry, CrisisEvent } from '../types/crisi
 interface LiveIntelligenceFeedProps {
   onSelectConflict: (conflictId: string) => void;
   allEvents: CrisisEvent[];
+  onOpenNewsSection?: () => void;
 }
 
 export const LiveIntelligenceFeed: React.FC<LiveIntelligenceFeedProps> = ({
   onSelectConflict,
   allEvents,
+  onOpenNewsSection,
 }) => {
   const [newsItems, setNewsItems] = useState<LiveNewsItem[]>([]);
   const [telemetry, setTelemetry] = useState<ConflictLiveTelemetry[]>([]);
@@ -200,6 +202,18 @@ export const LiveIntelligenceFeed: React.FC<LiveIntelligenceFeedProps> = ({
             <Sparkles className={`w-3 h-3 ${isFetchingAi ? 'animate-spin' : ''}`} />
             <span>{isFetchingAi ? 'SYNTHESIZING...' : 'AI INTEL SWEEP'}</span>
           </button>
+
+          {/* Open Full Global News Section */}
+          {onOpenNewsSection && (
+            <button
+              onClick={onOpenNewsSection}
+              className="flex items-center gap-1 px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-800 hover:border-cyan-600 transition-all font-bold text-[11px]"
+              title="Open the full Global News Wire report terminal with BBC, CNN, Al Jazeera, AP, NDTV, YT sources"
+            >
+              <Radio className="w-3 h-3 text-red-500 animate-pulse" />
+              <span className="hidden sm:inline">GLOBAL NEWS REPORT</span>
+            </button>
+          )}
 
           {/* Expand/Collapse Drawer Button */}
           <button

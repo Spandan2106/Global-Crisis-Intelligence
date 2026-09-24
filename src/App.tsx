@@ -19,6 +19,7 @@ import { CrisisNetworkView } from './components/CrisisNetworkView';
 import { ScenarioAnalysisView } from './components/ScenarioAnalysisView';
 import { CrisisAnalystChat } from './components/CrisisAnalystChat';
 import { TimelineControl } from './components/TimelineControl';
+import { GlobalNewsWireView } from './components/GlobalNewsWireView';
 
 // Geographic Coordinates Lookup for Smooth Camera Flight
 const SEARCH_COORDINATES: Record<string, { lat: number; lng: number; zoom: number }> = {
@@ -292,6 +293,7 @@ export default function App() {
       <LiveIntelligenceFeed
         onSelectConflict={handleSelectConflictFromWire}
         allEvents={MOCK_CRISIS_EVENTS}
+        onOpenNewsSection={() => setCurrentMode('news')}
       />
 
       {/* Global Intelligence Metrics Bar */}
@@ -315,6 +317,20 @@ export default function App() {
             <CrisisNetworkView />
           ) : currentMode === 'scenarios' ? (
             <ScenarioAnalysisView />
+          ) : currentMode === 'news' ? (
+            /* DEDICATED GLOBAL NEWS REPORT SECTION (BBC, CNN, Al Jazeera, Google News, YouTube, AP, NDTV, Reuters) */
+            <GlobalNewsWireView
+              onFlyToConflict={(conflictId) => {
+                const ev = MOCK_CRISIS_EVENTS.find(e => e.id === conflictId);
+                if (ev) {
+                  setSelectedEvent(ev);
+                  setSearchFlyToTarget({ lat: ev.latitude, lng: ev.longitude, zoom: 6.0 });
+                  setCurrentMode('global');
+                }
+              }}
+              allEvents={MOCK_CRISIS_EVENTS}
+              selectedConflictId={selectedEvent?.id}
+            />
           ) : earthMode === 'earth' ? (
             /* MODE B: TRUE 3D GEOGRAPHIC EARTH */
             <RealEarthGlobeView
@@ -338,7 +354,7 @@ export default function App() {
         </main>
 
         {/* Right Event Dossier Panel */}
-        {selectedEvent && currentMode !== 'markets' && currentMode !== 'network' && currentMode !== 'scenarios' && (
+        {selectedEvent && currentMode !== 'markets' && currentMode !== 'network' && currentMode !== 'scenarios' && currentMode !== 'news' && (
           <EventDetails
             event={selectedEvent}
             onClose={() => setSelectedEvent(null)}
@@ -349,7 +365,7 @@ export default function App() {
       </div>
 
       {/* Bottom Timeline Machine (Default: Today's Ongoing Data | 2-Year: 2024-2026 | Total: 1950-Today | Custom Year) */}
-      {currentMode !== 'markets' && currentMode !== 'network' && currentMode !== 'scenarios' && (
+      {currentMode !== 'markets' && currentMode !== 'network' && currentMode !== 'scenarios' && currentMode !== 'news' && (
         <TimelineControl
           timelineMode={timelineMode}
           onTimelineModeChange={setTimelineMode}
