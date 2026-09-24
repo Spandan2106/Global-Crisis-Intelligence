@@ -1,0 +1,6 @@
+{
+  "name": "Global Crisis Intelligence Map",
+  "description": "Interactive 3D Earth and geopolitical intelligence dashboard visualizing conflicts, crises, economic stress, market volatility, and AI-assisted risk indicators with source transparency.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
