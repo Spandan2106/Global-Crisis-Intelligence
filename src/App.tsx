@@ -20,6 +20,19 @@ import { ScenarioAnalysisView } from './components/ScenarioAnalysisView';
 import { CrisisAnalystChat } from './components/CrisisAnalystChat';
 import { TimelineControl } from './components/TimelineControl';
 import { GlobalNewsWireView } from './components/GlobalNewsWireView';
+import { StrategicHud } from './components/StrategicHud';
+import { ReconnaissanceOverlay } from './components/ReconnaissanceOverlay';
+import { CommandCenterWarRoom } from './components/CommandCenterWarRoom';
+import { PresidentialDailyBriefModal } from './components/PresidentialDailyBriefModal';
+import { WhatIfCrisisSimulatorModal } from './components/WhatIfCrisisSimulatorModal';
+import { 
+  MOCK_MARITIME_VESSELS, 
+  MOCK_MILITARY_FLIGHTS, 
+  MOCK_THERMAL_SENSOR_EVENTS, 
+  MOCK_STRATEGIC_THREAT_HUD 
+} from './data/mockReconData';
+import { TacticalTheme, ChokepointStressMetric } from './types/recon';
+import { soundFx } from './services/soundFxService';
 
 // Geographic Coordinates Lookup for Smooth Camera Flight
 const SEARCH_COORDINATES: Record<string, { lat: number; lng: number; zoom: number }> = {
@@ -70,6 +83,22 @@ export default function App() {
 
   // Geographic Dual Engine: MODE A (2D Map / Google Maps) vs MODE B (3D Earth Globe)
   const [earthMode, setEarthMode] = useState<'map' | 'earth'>('earth');
+
+  // Tactical Theme: 'cyber-dark' | 'night-vision' | 'amber-mono' | 'deep-navy'
+  const [tacticalTheme, setTacticalTheme] = useState<TacticalTheme>('cyber-dark');
+
+  // Modal Dialogs
+  const [isWhatIfModalOpen, setIsWhatIfModalOpen] = useState(false);
+  const [isBriefingModalOpen, setIsBriefingModalOpen] = useState(false);
+
+  // Reconnaissance & Telemetry Layer Toggles
+  const [reconLayers, setReconLayers] = useState({
+    ais: true,
+    adsb: true,
+    firms: true,
+  });
+
+  const [threatState] = useState(MOCK_STRATEGIC_THREAT_HUD);
 
   // Selected Items - Default focus on Strait of Hormuz conflict
   const defaultEvent = MOCK_CRISIS_EVENTS.find(e => e.id === 'crisis-hormuz-strait-standoff') || MOCK_CRISIS_EVENTS[0];
@@ -253,7 +282,9 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
+    <div className={`flex flex-col h-screen w-screen bg-slate-950 text-slate-100 overflow-hidden font-sans select-none transition-all ${
+      tacticalTheme !== 'cyber-dark' ? 'theme-' + tacticalTheme : ''
+    }`}>
       {/* Google Maps Quota Warning Banner */}
       {isGmpQuotaExceeded && (
         <div className="bg-amber-50 border-b border-amber-200 text-amber-900 px-4 py-2 text-xs md:text-sm text-center sticky top-0 z-50 shadow-sm font-sans flex items-center justify-center gap-1">
@@ -289,6 +320,21 @@ export default function App() {
         onToggleEarthMode={(mode) => setEarthMode(mode)}
       />
 
+      {/* Geopolitical Alert Status HUD (Global DEFCON & Chokepoint Gauges) */}
+      <StrategicHud
+        threatState={threatState}
+        currentTheme={tacticalTheme}
+        onChangeTheme={(theme) => setTacticalTheme(theme)}
+        onSelectChokepoint={(cp) => {
+          setSearchFlyToTarget({ lat: cp.lat, lng: cp.lng, zoom: 6.5 });
+          if (currentMode !== 'global' && currentMode !== 'conflicts') {
+            setCurrentMode('global');
+          }
+        }}
+        onOpenWhatIfSimulator={() => setIsWhatIfModalOpen(true)}
+        onOpenBriefing={() => setIsBriefingModalOpen(true)}
+      />
+
       {/* Real-Time Live Intelligence & News Wire (Continuously Fetches & Tickers) */}
       <LiveIntelligenceFeed
         onSelectConflict={handleSelectConflictFromWire}
@@ -311,7 +357,17 @@ export default function App() {
 
         {/* Center Canvas / Mode Switcher */}
         <main className="relative flex-1 h-full overflow-hidden bg-slate-950">
-          {currentMode === 'markets' ? (
+          {currentMode === 'warroom' ? (
+            /* MULTI-SCREEN WAR ROOM / COMMAND CENTER MODE (4-QUADRANT SPLIT COMMAND WALL) */
+            <CommandCenterWarRoom
+              events={filteredEvents}
+              selectedEvent={selectedEvent}
+              onSelectEvent={(ev) => setSelectedEvent(ev)}
+              earthMode={earthMode}
+              onToggleEarthMode={(mode) => setEarthMode(mode)}
+              onExitWarRoom={() => setCurrentMode('global')}
+            />
+          ) : currentMode === 'markets' ? (
             <MarketDashboard />
           ) : currentMode === 'network' ? (
             <CrisisNetworkView />
@@ -332,7 +388,7 @@ export default function App() {
               selectedConflictId={selectedEvent?.id}
             />
           ) : earthMode === 'earth' ? (
-            /* MODE B: TRUE 3D GEOGRAPHIC EARTH */
+            /* MODE B: TRUE 3D GEOGRAPHIC EARTH WITH RECON TELEMETRY */
             <RealEarthGlobeView
               events={filteredEvents}
               selectedEvent={selectedEvent}
@@ -340,6 +396,12 @@ export default function App() {
               onSelectCountry={(code) => setSelectedCountryCode(code)}
               layerFilters={filters.layers}
               searchFlyToTarget={searchFlyToTarget}
+              reconTelemetry={{
+                vessels: MOCK_MARITIME_VESSELS,
+                flights: MOCK_MILITARY_FLIGHTS,
+                thermalEvents: MOCK_THERMAL_SENSOR_EVENTS,
+                activeLayers: reconLayers,
+              }}
             />
           ) : (
             /* MODE A: 2D REAL-WORLD GOOGLE MAPS EXPERIENCE */
@@ -351,10 +413,26 @@ export default function App() {
               layerFilters={filters.layers}
             />
           )}
+
+          {/* Live Reconnaissance & Telemetry Overlays Floating Dock */}
+          {currentMode !== 'warroom' && currentMode !== 'markets' && currentMode !== 'network' && currentMode !== 'scenarios' && currentMode !== 'news' && (
+            <ReconnaissanceOverlay
+              vessels={MOCK_MARITIME_VESSELS}
+              flights={MOCK_MILITARY_FLIGHTS}
+              thermalEvents={MOCK_THERMAL_SENSOR_EVENTS}
+              activeLayers={reconLayers}
+              onToggleLayer={(layer) => {
+                setReconLayers(prev => ({ ...prev, [layer]: !prev[layer] }));
+              }}
+              onFocusEntity={(coords) => {
+                setSearchFlyToTarget(coords);
+              }}
+            />
+          )}
         </main>
 
         {/* Right Event Dossier Panel */}
-        {selectedEvent && currentMode !== 'markets' && currentMode !== 'network' && currentMode !== 'scenarios' && currentMode !== 'news' && (
+        {selectedEvent && currentMode !== 'warroom' && currentMode !== 'markets' && currentMode !== 'network' && currentMode !== 'scenarios' && currentMode !== 'news' && (
           <EventDetails
             event={selectedEvent}
             onClose={() => setSelectedEvent(null)}
@@ -364,8 +442,8 @@ export default function App() {
         )}
       </div>
 
-      {/* Bottom Timeline Machine (Default: Today's Ongoing Data | 2-Year: 2024-2026 | Total: 1950-Today | Custom Year) */}
-      {currentMode !== 'markets' && currentMode !== 'network' && currentMode !== 'scenarios' && currentMode !== 'news' && (
+      {/* Bottom Timeline Machine */}
+      {currentMode !== 'warroom' && currentMode !== 'markets' && currentMode !== 'network' && currentMode !== 'scenarios' && currentMode !== 'news' && (
         <TimelineControl
           timelineMode={timelineMode}
           onTimelineModeChange={setTimelineMode}
@@ -399,6 +477,19 @@ export default function App() {
         onClose={() => setIsAnalystChatOpen(false)}
         selectedEvent={selectedEvent}
         allEvents={filteredEvents}
+      />
+
+      {/* President's Daily Brief (PDB) Modal */}
+      <PresidentialDailyBriefModal
+        isOpen={isBriefingModalOpen}
+        onClose={() => setIsBriefingModalOpen(false)}
+        onFlyToCoordinates={(coords) => setSearchFlyToTarget(coords)}
+      />
+
+      {/* Interactive What-If Crisis Shock Simulator Modal */}
+      <WhatIfCrisisSimulatorModal
+        isOpen={isWhatIfModalOpen}
+        onClose={() => setIsWhatIfModalOpen(false)}
       />
     </div>
   );

@@ -59,7 +59,22 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Explicit MapLibre Web Worker delivery with strict application/javascript MIME type
+// Explicit MapLibre distribution files delivery with strict application/javascript MIME type
+app.get('/maplibre-gl-shared.mjs', (req, res) => {
+  const publicShared = path.resolve(__dirname, 'public', 'maplibre-gl-shared.mjs');
+  if (fs.existsSync(publicShared)) {
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return res.sendFile(publicShared);
+  }
+  const distShared = path.resolve(__dirname, 'node_modules', 'maplibre-gl', 'dist', 'maplibre-gl-shared.mjs');
+  if (fs.existsSync(distShared)) {
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    return res.sendFile(distShared);
+  }
+  res.status(404).type('text/plain').send('Shared script not found');
+});
+
 app.get('/maplibre-gl-worker.mjs', (req, res) => {
   const publicWorker = path.resolve(__dirname, 'public', 'maplibre-gl-worker.mjs');
   if (fs.existsSync(publicWorker)) {
@@ -73,6 +88,24 @@ app.get('/maplibre-gl-worker.mjs', (req, res) => {
     return res.sendFile(distWorker);
   }
   res.status(404).type('text/plain').send('Worker script not found');
+});
+
+app.get(/^\/(maplibre-gl-[a-zA-Z0-9_.-]+\.mjs(\.map)?)$/, (req, res) => {
+  const fileName = req.params[0];
+  const publicPath = path.resolve(__dirname, 'public', fileName);
+  if (fs.existsSync(publicPath)) {
+    const isMap = fileName.endsWith('.map');
+    res.setHeader('Content-Type', isMap ? 'application/json' : 'application/javascript; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    return res.sendFile(publicPath);
+  }
+  const distPath = path.resolve(__dirname, 'node_modules', 'maplibre-gl', 'dist', fileName);
+  if (fs.existsSync(distPath)) {
+    const isMap = fileName.endsWith('.map');
+    res.setHeader('Content-Type', isMap ? 'application/json' : 'application/javascript; charset=utf-8');
+    return res.sendFile(distPath);
+  }
+  res.status(404).type('text/plain').send('Not found');
 });
 
 // Comprehensive Real-Time Global News Wire Endpoint (BBC, CNN, Al Jazeera, Google News, YouTube, AP, NDTV, Reuters, Bloomberg)
@@ -98,6 +131,8 @@ app.get('/api/news/global', (req, res) => {
       conflictName: 'Strait of Hormuz Naval Standoff',
       region: 'Middle East',
       coordinates: [26.5667, 56.2500],
+      contentType: 'wire',
+      segmentTag: 'MARITIME ADVISORY',
       verified: true,
     },
     {
@@ -115,6 +150,8 @@ app.get('/api/news/global', (req, res) => {
       conflictName: 'Gaza Urban Hostilities & Famine Risk',
       region: 'Middle East',
       coordinates: [31.4167, 34.3333],
+      contentType: 'wire',
+      segmentTag: 'HUMANITARIAN DISPATCH',
       verified: true,
     },
     {
@@ -132,6 +169,8 @@ app.get('/api/news/global', (req, res) => {
       conflictName: 'Lebanon Blue Line Escalation',
       region: 'Middle East',
       coordinates: [33.8938, 35.5018],
+      contentType: 'wire',
+      segmentTag: 'KINETIC ALERT',
       verified: true,
     },
     {
@@ -149,8 +188,10 @@ app.get('/api/news/global', (req, res) => {
       conflictName: 'Horn of Africa Red Sea Access Standoff',
       region: 'Africa',
       coordinates: [9.5624, 44.0770],
-      videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', // Standard stream preview link
+      videoUrl: 'https://www.youtube-nocookie.com/embed/bNyUyrR0PHo?autoplay=0',
       isLiveBroadcast: true,
+      contentType: 'video',
+      segmentTag: 'WAR ROOM OSINT VIDEO',
       verified: true,
     },
     {
@@ -168,6 +209,8 @@ app.get('/api/news/global', (req, res) => {
       conflictName: 'Sudan Civil War & Darfur Famine',
       region: 'Africa',
       coordinates: [15.5007, 32.5599],
+      contentType: 'wire',
+      segmentTag: 'AID CORRIDOR WIRE',
       verified: true,
     },
     {
@@ -185,6 +228,8 @@ app.get('/api/news/global', (req, res) => {
       conflictName: 'European Critical Infrastructure Hybrid Warfare',
       region: 'Europe',
       coordinates: [56.5000, 20.0000],
+      contentType: 'wire',
+      segmentTag: 'CRITICAL INFRASTRUCTURE',
       verified: true,
     },
     {
@@ -202,6 +247,46 @@ app.get('/api/news/global', (req, res) => {
       conflictName: 'Bab al-Mandab Shipping Chokepoint Crisis',
       region: 'Middle East',
       coordinates: [12.5855, 43.3361],
+      contentType: 'wire',
+      segmentTag: 'ECONOMIC TRANSMISSION',
+      verified: true,
+    },
+    {
+      id: 'news-ukmto-1',
+      source: 'UKMTO',
+      sourceLabel: 'UK Maritime Trade Operations',
+      headline: 'OFFICIAL ADVISORY 055/26: Electronic Interference & AIS Position Skews in Bab al-Mandab Approaches',
+      summary: 'UKMTO Dubai confirms multiple commercial bulk carriers logged spoofed coordinates placing vessels on inland terrain. Master advisories recommend manual parallel indexing and vigilant bridge lookouts.',
+      timestamp: new Date(now.getTime() - 48 * 60 * 1000).toISOString(),
+      timeAgo: '48m ago',
+      url: 'https://www.ukmto.org',
+      category: 'Maritime',
+      urgency: 'high',
+      conflictId: 'crisis-red-sea-chokepoint',
+      conflictName: 'Bab al-Mandab Shipping Chokepoint Crisis',
+      region: 'Middle East',
+      coordinates: [12.5855, 43.3361],
+      contentType: 'official_statement',
+      segmentTag: 'NAVAL & MARITIME NOTICE',
+      verified: true,
+    },
+    {
+      id: 'news-un-ocha-1',
+      source: 'UN OCHA',
+      sourceLabel: 'UN Relief Logistics',
+      headline: 'UN SITREP:IPC Acute Food Insecurity Projections for Northern Gaza and El Fasher, Sudan',
+      summary: 'UN Under-Secretary-General for Humanitarian Affairs releases emergency situation overview identifying catastrophic hunger indicators across 14 pockets in Darfur and northern governorates of Gaza.',
+      timestamp: new Date(now.getTime() - 52 * 60 * 1000).toISOString(),
+      timeAgo: '52m ago',
+      url: 'https://www.unocha.org',
+      category: 'Humanitarian',
+      urgency: 'critical',
+      conflictId: 'crisis-sudan-humanitarian',
+      conflictName: 'Sudan Civil War & Darfur Famine',
+      region: 'Africa',
+      coordinates: [13.6288, 25.3548],
+      contentType: 'official_statement',
+      segmentTag: 'UN OFFICIAL STATEMENT',
       verified: true,
     },
     {
@@ -210,8 +295,8 @@ app.get('/api/news/global', (req, res) => {
       sourceLabel: 'Reuters World',
       headline: 'Strait of Hormuz crude risk premium widens as insurers raise war-risk surcharges for Gulf tankers',
       summary: 'Marine underwriters in London announce updated hull insurance surcharges for Persian Gulf transits following GPS jamming alerts and heightened interception risks, adding up to $400,000 per VLCC voyage.',
-      timestamp: new Date(now.getTime() - 50 * 60 * 1000).toISOString(),
-      timeAgo: '50m ago',
+      timestamp: new Date(now.getTime() - 55 * 60 * 1000).toISOString(),
+      timeAgo: '55m ago',
       url: 'https://www.reuters.com/world/middle-east/',
       category: 'Economy',
       urgency: 'high',
@@ -219,6 +304,48 @@ app.get('/api/news/global', (req, res) => {
       conflictName: 'Strait of Hormuz Naval Standoff',
       region: 'Middle East',
       coordinates: [26.5667, 56.2500],
+      contentType: 'wire',
+      segmentTag: 'COMMODITY SHOCK',
+      verified: true,
+    },
+    {
+      id: 'news-dw-video-1',
+      source: 'DW',
+      sourceLabel: 'DW Conflict Zone',
+      headline: 'SPECIAL VIDEO: Geopolitical Power Struggle Across The Red Sea and Suez Chokepoints',
+      summary: 'In-depth analytical broadcast examining how container reroutings via the Cape of Good Hope impact European ports while depriving the Suez Canal of vital sovereign foreign exchange revenue.',
+      timestamp: new Date(now.getTime() - 60 * 60 * 1000).toISOString(),
+      timeAgo: '1h ago',
+      url: 'https://www.dw.com/en/top-stories/s-9097',
+      category: 'Maritime',
+      urgency: 'medium',
+      conflictId: 'crisis-red-sea-chokepoint',
+      conflictName: 'Bab al-Mandab Shipping Chokepoint Crisis',
+      region: 'Middle East',
+      coordinates: [28.0000, 33.5000],
+      videoUrl: 'https://www.youtube-nocookie.com/embed/Lu_Te_qkm8o?autoplay=0',
+      isLiveBroadcast: true,
+      contentType: 'video',
+      segmentTag: 'BROADCAST ANALYSIS',
+      verified: true,
+    },
+    {
+      id: 'news-satellite-firms-1',
+      source: 'NASA FIRMS',
+      sourceLabel: 'Satellite Thermal Recon',
+      headline: 'NASA FIRMS VIIRS: Cluster of 180+ MW Kinetic Thermal Flares Detected Near Pokrovsk Front',
+      summary: 'Satellite infrared radiometers on NOAA-20 recorded a dense cluster of thermal anomalies along fortified artillery lines in the eastern sector, confirming intense kinetic engagements over the last 12-hour orbit.',
+      timestamp: new Date(now.getTime() - 72 * 60 * 1000).toISOString(),
+      timeAgo: '1h ago',
+      url: 'https://firms.modaps.eosdis.nasa.gov',
+      category: 'Space/Satellite',
+      urgency: 'critical',
+      conflictId: 'crisis-ukr-frontline',
+      conflictName: 'Eastern Ukraine Frontline Attrition War',
+      region: 'Europe',
+      coordinates: [48.2822, 37.1828],
+      contentType: 'satellite_brief',
+      segmentTag: 'SPACE RECON TELEMETRY',
       verified: true,
     },
     {

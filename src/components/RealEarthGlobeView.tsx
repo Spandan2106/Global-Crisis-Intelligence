@@ -17,6 +17,7 @@ import {
   Mountain,
   Map as MapIcon
 } from 'lucide-react';
+import { MaritimeVessel, MilitaryFlight, ThermalSensorEvent } from '../types/recon';
 
 interface RealEarthGlobeViewProps {
   events: CrisisEvent[];
@@ -32,6 +33,16 @@ interface RealEarthGlobeViewProps {
     heatmaps: boolean;
   };
   searchFlyToTarget?: { lat: number; lng: number; zoom?: number } | null;
+  reconTelemetry?: {
+    vessels?: MaritimeVessel[];
+    flights?: MilitaryFlight[];
+    thermalEvents?: ThermalSensorEvent[];
+    activeLayers: {
+      ais: boolean;
+      adsb: boolean;
+      firms: boolean;
+    };
+  };
 }
 
 export type EarthImageryType = 'satellite' | 'hybrid' | 'terrain' | 'default';
@@ -54,10 +65,15 @@ const REGIONAL_PRESETS: { name: string; center: [number, number]; zoom: number; 
 
 const CATEGORY_COLORS: Record<CrisisCategory, string> = {
   military: '#ef4444',
+  conflict: '#ef4444',
+  security: '#ef4444',
   economic: '#3b82f6',
   financial: '#06b6d4',
   political: '#a855f7',
+  diplomatic: '#a855f7',
   humanitarian: '#f59e0b',
+  energy: '#64748b',
+  environmental: '#10b981',
 };
 
 export const RealEarthGlobeView: React.FC<RealEarthGlobeViewProps> = ({
@@ -67,6 +83,7 @@ export const RealEarthGlobeView: React.FC<RealEarthGlobeViewProps> = ({
   onSelectCountry,
   layerFilters,
   searchFlyToTarget,
+  reconTelemetry,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -229,7 +246,12 @@ export const RealEarthGlobeView: React.FC<RealEarthGlobeViewProps> = ({
       }, 500);
     });
 
+    const fallbackSafetyTimer = setTimeout(() => {
+      setLoadingStep('ready');
+    }, 1800);
+
     return () => {
+      clearTimeout(fallbackSafetyTimer);
       map.remove();
       mapRef.current = null;
     };
@@ -351,7 +373,91 @@ export const RealEarthGlobeView: React.FC<RealEarthGlobeViewProps> = ({
 
       markersRef.current.push(marker);
     });
-  }, [events, selectedEvent, layerFilters]);
+
+    // Render AIS Maritime Vessels
+    if (reconTelemetry?.activeLayers.ais && reconTelemetry.vessels) {
+      reconTelemetry.vessels.forEach((vessel) => {
+        const el = document.createElement('div');
+        el.className = 'group cursor-pointer relative';
+        el.style.transform = 'translate(-50%, -50%)';
+
+        const pin = document.createElement('div');
+        pin.className = `flex items-center justify-center rounded-full text-[10px] shadow-lg transition-transform hover:scale-125 ${
+          vessel.status === 'high_risk_zone'
+            ? 'w-5 h-5 bg-cyan-500 border border-red-400 text-slate-900 ring-2 ring-red-500 animate-pulse'
+            : 'w-4 h-4 bg-cyan-600 border border-cyan-300 text-slate-900'
+        }`;
+        pin.innerHTML = '⚓';
+        el.appendChild(pin);
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'absolute left-1/2 -translate-x-1/2 bottom-full mb-1 hidden group-hover:block z-50 pointer-events-none bg-slate-950/95 border border-cyan-500 px-2 py-1 rounded shadow-xl text-[9px] text-cyan-300 whitespace-nowrap font-mono';
+        tooltip.innerHTML = `<strong>${vessel.name}</strong> (${vessel.speedKnots} kts)<br/>${vessel.chokepointLabel} · ${vessel.cargo}`;
+        el.appendChild(tooltip);
+
+        const marker = new maplibregl.Marker({ element: el })
+          .setLngLat([vessel.lng, vessel.lat])
+          .addTo(map);
+
+        markersRef.current.push(marker);
+      });
+    }
+
+    // Render ADS-B Military & Recon Flights
+    if (reconTelemetry?.activeLayers.adsb && reconTelemetry.flights) {
+      reconTelemetry.flights.forEach((flight) => {
+        const el = document.createElement('div');
+        el.className = 'group cursor-pointer relative';
+        el.style.transform = 'translate(-50%, -50%)';
+
+        const pin = document.createElement('div');
+        pin.className = 'w-5 h-5 flex items-center justify-center rounded-full bg-blue-600 border border-blue-300 text-white text-[10px] shadow-lg transition-transform hover:scale-125';
+        pin.innerHTML = '✈';
+        pin.style.transform = `rotate(${flight.headingDeg - 90}deg)`;
+        el.appendChild(pin);
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'absolute left-1/2 -translate-x-1/2 bottom-full mb-1 hidden group-hover:block z-50 pointer-events-none bg-slate-950/95 border border-blue-500 px-2 py-1 rounded shadow-xl text-[9px] text-blue-300 whitespace-nowrap font-mono';
+        tooltip.innerHTML = `<strong>${flight.callsign}</strong> (${flight.modelCode})<br/>${flight.altitudeFt.toLocaleString()} FT · ${flight.mission}`;
+        el.appendChild(tooltip);
+
+        const marker = new maplibregl.Marker({ element: el })
+          .setLngLat([flight.lng, flight.lat])
+          .addTo(map);
+
+        markersRef.current.push(marker);
+      });
+    }
+
+    // Render NASA FIRMS Thermal Sensor Hotspots
+    if (reconTelemetry?.activeLayers.firms && reconTelemetry.thermalEvents) {
+      reconTelemetry.thermalEvents.forEach((thermal) => {
+        const el = document.createElement('div');
+        el.className = 'group cursor-pointer relative';
+        el.style.transform = 'translate(-50%, -50%)';
+
+        const pulse = document.createElement('div');
+        pulse.className = 'absolute -inset-2 rounded-full bg-orange-500 animate-ping opacity-75 pointer-events-none';
+        el.appendChild(pulse);
+
+        const pin = document.createElement('div');
+        pin.className = 'relative z-10 w-4 h-4 flex items-center justify-center rounded-full bg-orange-600 border border-yellow-300 text-white text-[9px] shadow-md';
+        pin.innerHTML = '🔥';
+        el.appendChild(pin);
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'absolute left-1/2 -translate-x-1/2 bottom-full mb-1 hidden group-hover:block z-50 pointer-events-none bg-slate-950/95 border border-orange-500 px-2 py-1 rounded shadow-xl text-[9px] text-orange-300 whitespace-nowrap font-mono';
+        tooltip.innerHTML = `<strong>${thermal.theater}</strong>: ${thermal.brightnessMw} MW<br/>${thermal.classification.replace('_', ' ').toUpperCase()} (${thermal.sensor})`;
+        el.appendChild(tooltip);
+
+        const marker = new maplibregl.Marker({ element: el })
+          .setLngLat([thermal.lng, thermal.lat])
+          .addTo(map);
+
+        markersRef.current.push(marker);
+      });
+    }
+  }, [events, selectedEvent, layerFilters, reconTelemetry]);
 
   // Smooth Fly-To when an Event or Search Target is Selected
   useEffect(() => {

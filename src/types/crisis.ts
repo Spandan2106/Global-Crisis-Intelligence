@@ -3,14 +3,20 @@ export type CrisisCategory =
   | 'military'
   | 'economic'
   | 'financial'
-  | 'humanitarian';
+  | 'humanitarian'
+  | 'conflict'
+  | 'diplomatic'
+  | 'security'
+  | 'energy'
+  | 'environmental';
 
 export type CrisisStatus = 
   | 'active'
   | 'escalating'
   | 'de-escalating'
   | 'resolved'
-  | 'historical';
+  | 'historical'
+  | 'ongoing';
 
 export type RiskLevel = 
   | 'very_low'    // 0.00 - 0.19
@@ -74,6 +80,7 @@ export interface CrisisEvent {
   reportsDiffer?: boolean;
   reportsDisagreementSummary?: string;
   isDemo: boolean;
+  isOngoing?: boolean;
   lastUpdated: string;
   connectedCrisisIds?: string[];
 }
@@ -140,6 +147,7 @@ export interface MarketAsset {
   geopoliticalDrivers: string[];
   exposedSectors: string[];
   exposedCountries: string[];
+  sourceStatus?: string;
 }
 
 export interface NetworkNode {
@@ -175,16 +183,18 @@ export interface LiveNewsItem {
   verified: boolean;
 }
 
+export type NewsContentType = 'wire' | 'video' | 'official_statement' | 'satellite_brief' | 'audio_dispatch';
+
 export interface GlobalNewsReport {
   id: string;
-  source: string; // e.g. 'BBC', 'CNN', 'Al Jazeera', 'Google News', 'YouTube', 'AP', 'NDTV', 'Reuters'
+  source: string; // e.g. 'BBC', 'CNN', 'Al Jazeera', 'Google News', 'YouTube', 'AP', 'NDTV', 'Reuters', 'UKMTO', 'UN OCHA'
   sourceLabel?: string;
   headline: string;
   summary: string;
   timestamp: string;
   timeAgo: string;
   url: string;
-  category: 'Kinetic' | 'Maritime' | 'Diplomacy' | 'Economy' | 'Humanitarian' | 'Hybrid Warfare' | 'Breaking';
+  category: 'Kinetic' | 'Maritime' | 'Diplomacy' | 'Economy' | 'Humanitarian' | 'Hybrid Warfare' | 'Breaking' | 'Space/Satellite';
   urgency: 'critical' | 'high' | 'medium';
   conflictId?: string;
   conflictName?: string;
@@ -192,6 +202,8 @@ export interface GlobalNewsReport {
   coordinates?: [number, number]; // [lat, lng]
   videoUrl?: string; // YouTube or video dispatch embed
   isLiveBroadcast?: boolean;
+  contentType?: NewsContentType; // e.g. 'wire' | 'video' | 'official_statement' | 'satellite_brief'
+  segmentTag?: string; // e.g. 'WAR ROOM OSINT', 'SATELLITE INTEL', 'UN BRIEFING', 'MARITIME ADVISORY', 'BREAKING WIRE'
   verified: boolean;
 }
 
@@ -227,6 +239,8 @@ export interface FilterState {
     economic: boolean;
     financial: boolean;
     humanitarian: boolean;
+    conflict?: boolean;
+    [key: string]: boolean | undefined;
   };
   status: {
     active: boolean;
@@ -234,6 +248,8 @@ export interface FilterState {
     deEscalating: boolean;
     resolved: boolean;
     historical: boolean;
+    ongoing?: boolean;
+    [key: string]: boolean | undefined;
   };
   minRisk: number;
   maxRisk: number;
@@ -246,6 +262,33 @@ export interface FilterState {
     pulses: boolean;
     countryBorders: boolean;
     heatmaps: boolean;
+    humanitarian?: boolean;
+    [key: string]: boolean | undefined;
   };
   demoMode: boolean;
+}
+
+export interface NewsArticle {
+  id: string;
+  title: string;
+  source: string;
+  url: string;
+  publishedAt: string;
+  summary: string;
+  category?: string;
+  region?: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+export interface EconomicDataPoint {
+  id: string;
+  name: string;
+  value: number;
+  unit: string;
+  change: number;
+  period: string;
+  country?: string;
+  indicator?: string;
+  source?: string;
 }

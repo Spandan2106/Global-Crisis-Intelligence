@@ -201,9 +201,9 @@ export const LeftNavRail: React.FC<LeftNavRailProps> = ({
             </span>
 
             <button
-              onClick={() => onSelectMode('live_news')}
+              onClick={() => onSelectMode('news')}
               className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded transition-colors text-left ${
-                currentMode === 'live_news'
+                currentMode === 'news'
                   ? 'bg-[#202020] text-[#E6E6E6] font-bold border-l-2 border-[#dc2626]'
                   : 'text-[#A0A0A0] hover:bg-[#181818] hover:text-[#E6E6E6]'
               }`}

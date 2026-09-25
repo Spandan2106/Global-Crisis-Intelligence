@@ -83,6 +83,7 @@ export const GoogleEarthView: React.FC<GoogleEarthViewProps> = ({
   layerFilters,
 }) => {
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+  const mapId = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || 'DEMO_MAP_ID';
   const [mapType, setMapType] = useState<'roadmap' | 'satellite' | 'hybrid' | 'terrain'>('satellite');
   const [isOrbiting, setIsOrbiting] = useState(false);
   const [tilt, setTilt] = useState(45);
@@ -100,6 +101,8 @@ export const GoogleEarthView: React.FC<GoogleEarthViewProps> = ({
     <div className="relative w-full h-full bg-[#111111] overflow-hidden select-none font-mono">
       <APIProvider apiKey={apiKey}>
         <Map
+          mapId={mapId}
+          internalUsageAttributionIds={['gmp_mcp_codeassist_v1_aistudio']}
           defaultCenter={{ lat: 25.0, lng: 20.0 }}
           defaultZoom={2.4}
           mapTypeId={mapType}

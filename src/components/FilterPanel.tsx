@@ -75,6 +75,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     onChangeFilters({
       ...filters,
       categories: {
+        military: true,
         conflict: true,
         political: true,
         economic: true,
@@ -86,6 +87,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
         environmental: true,
       },
       status: {
+        active: true,
         ongoing: true,
         escalating: true,
         deEscalating: true,

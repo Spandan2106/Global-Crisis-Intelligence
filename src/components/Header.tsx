@@ -14,11 +14,12 @@ import {
   CheckCircle2, 
   SlidersHorizontal,
   X,
-  Radio
+  Radio,
+  LayoutGrid
 } from 'lucide-react';
 import { CrisisEvent } from '../types/crisis';
 
-export type DashboardMode = 'global' | 'conflicts' | 'economy' | 'markets' | 'history' | 'network' | 'scenarios' | 'news';
+export type DashboardMode = 'global' | 'conflicts' | 'economy' | 'markets' | 'history' | 'network' | 'scenarios' | 'news' | 'warroom';
 
 interface HeaderProps {
   currentMode: DashboardMode;
@@ -70,6 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
     { mode: 'history', label: 'History', icon: <History className="w-3.5 h-3.5 text-slate-400" /> },
     { mode: 'network', label: 'Crisis Network', icon: <Network className="w-3.5 h-3.5 text-cyan-400" /> },
     { mode: 'scenarios', label: 'Scenarios', icon: <GitFork className="w-3.5 h-3.5 text-purple-400" /> },
+    { mode: 'warroom', label: 'War Room', icon: <LayoutGrid className="w-3.5 h-3.5 text-red-400 animate-pulse" /> },
   ];
 
   return (

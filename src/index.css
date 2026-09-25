@@ -12,6 +12,19 @@
   }
 }
 
+/* Tactical Theme Overrides */
+.theme-night-vision {
+  filter: hue-rotate(65deg) saturate(1.4) brightness(0.95);
+}
+
+.theme-amber-mono {
+  filter: sepia(0.85) hue-rotate(-20deg) saturate(1.8) contrast(1.05);
+}
+
+.theme-deep-navy {
+  filter: hue-rotate(185deg) saturate(1.2);
+}
+
 /* Custom scrollbars for intelligence panels */
 ::-webkit-scrollbar {
   width: 5px;
@@ -63,3 +76,16 @@
 .glow-humanitarian {
   box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);
 }
+
+/* Official Print Styles for Presidential Daily Brief */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+
+  header, nav, aside, footer, button, .print\:hidden {
+    display: none !important;
+  }
+}
+

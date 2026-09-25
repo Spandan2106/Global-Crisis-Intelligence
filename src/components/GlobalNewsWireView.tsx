@@ -37,7 +37,9 @@ export const GlobalNewsWireView: React.FC<GlobalNewsWireViewProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedSource, setSelectedSource] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedContentType, setSelectedContentType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeVideoModal, setActiveVideoModal] = useState<GlobalNewsReport | null>(null);
   const [countdown, setCountdown] = useState<number>(20);
   const [autoSync, setAutoSync] = useState<boolean>(true);
   const [isSynthesizing, setIsSynthesizing] = useState<boolean>(false);
@@ -51,14 +53,26 @@ export const GlobalNewsWireView: React.FC<GlobalNewsWireViewProps> = ({
 
   const sourcesList = [
     { id: 'all', label: 'ALL SOURCES' },
+    { id: 'al jazeera', label: 'AL JAZEERA', badge: 'AJ' },
+    { id: 'dw', label: 'DW NEWS', badge: 'DW' },
     { id: 'bbc', label: 'BBC WORLD', badge: 'BBC' },
     { id: 'cnn', label: 'CNN INT', badge: 'CNN' },
-    { id: 'al jazeera', label: 'AL JAZEERA', badge: 'AJ' },
-    { id: 'google', label: 'GOOGLE NEWS', badge: 'G-NEWS' },
-    { id: 'youtube', label: 'YOUTUBE WAR DESK', badge: 'YT' },
+    { id: 'youtube', label: 'OSINT VIDEO WIRE', badge: 'VIDEO' },
+    { id: 'ukmto', label: 'UKMTO MARITIME', badge: 'UKMTO' },
+    { id: 'un', label: 'UN OCHA / DIPLOMACY', badge: 'UN' },
+    { id: 'nasa', label: 'NASA SATELLITE', badge: 'NASA' },
     { id: 'ap', label: 'AP WIRE', badge: 'AP' },
-    { id: 'ndtv', label: 'NDTV WORLD', badge: 'NDTV' },
     { id: 'reuters', label: 'REUTERS', badge: 'RT' },
+    { id: 'google', label: 'GOOGLE NEWS', badge: 'G-NEWS' },
+    { id: 'ndtv', label: 'NDTV WORLD', badge: 'NDTV' },
+  ];
+
+  const contentTypes = [
+    { id: 'all', label: 'All Formats' },
+    { id: 'wire', label: 'Wire Dispatches' },
+    { id: 'video', label: 'Video Segments' },
+    { id: 'official_statement', label: 'Official Statements' },
+    { id: 'satellite_brief', label: 'Satellite / Sensor Intel' },
   ];
 
   const categories = [
@@ -69,6 +83,7 @@ export const GlobalNewsWireView: React.FC<GlobalNewsWireViewProps> = ({
     { id: 'Hybrid Warfare', label: 'Hybrid & Sabotage' },
     { id: 'Diplomacy', label: 'Diplomatic Pacts' },
     { id: 'Economy', label: 'Energy & Supply Chain' },
+    { id: 'Space/Satellite', label: 'Space Recon' },
   ];
 
   // Fetch real-time global news feed from server
@@ -144,9 +159,13 @@ export const GlobalNewsWireView: React.FC<GlobalNewsWireViewProps> = ({
     }
   };
 
-  // Filter news items by theme category
+  // Filter news items by theme category, content format, and search
   const displayedNews = newsList.filter(item => {
     if (selectedCategory !== 'all' && item.category !== selectedCategory) return false;
+    if (selectedContentType !== 'all') {
+      const type = item.contentType || (item.videoUrl ? 'video' : 'wire');
+      if (type !== selectedContentType) return false;
+    }
     return true;
   });
 
@@ -155,7 +174,11 @@ export const GlobalNewsWireView: React.FC<GlobalNewsWireViewProps> = ({
     if (s.includes('bbc')) return 'bg-red-950 text-red-300 border-red-800';
     if (s.includes('cnn')) return 'bg-rose-950 text-rose-300 border-rose-800';
     if (s.includes('al jazeera')) return 'bg-amber-950 text-amber-300 border-amber-800';
+    if (s.includes('dw')) return 'bg-blue-950 text-sky-300 border-sky-800';
     if (s.includes('youtube')) return 'bg-red-900 text-white border-red-700';
+    if (s.includes('ukmto')) return 'bg-cyan-950 text-cyan-300 border-cyan-700';
+    if (s.includes('un')) return 'bg-indigo-950 text-indigo-300 border-indigo-700';
+    if (s.includes('nasa')) return 'bg-orange-950 text-orange-300 border-orange-700';
     if (s.includes('ap')) return 'bg-slate-900 text-cyan-300 border-cyan-800';
     if (s.includes('ndtv')) return 'bg-orange-950 text-orange-300 border-orange-800';
     if (s.includes('google')) return 'bg-blue-950 text-blue-300 border-blue-800';
@@ -263,6 +286,27 @@ export const GlobalNewsWireView: React.FC<GlobalNewsWireViewProps> = ({
           ))}
         </div>
 
+        {/* Format / Content Type Pills Row */}
+        <div className="flex items-center gap-2 flex-wrap pt-2 border-t border-slate-800/60">
+          <span className="text-[11px] text-slate-400 font-semibold uppercase flex items-center gap-1 mr-1">
+            <Radio className="w-3.5 h-3.5 text-amber-400" />
+            <span>FORMAT:</span>
+          </span>
+          {contentTypes.map(ct => (
+            <button
+              key={ct.id}
+              onClick={() => setSelectedContentType(ct.id)}
+              className={`px-2.5 py-0.5 rounded text-xs font-bold transition-all ${
+                selectedContentType === ct.id
+                  ? 'bg-amber-600 text-white shadow-sm ring-1 ring-amber-400'
+                  : 'bg-slate-900 hover:bg-slate-850 text-slate-400 hover:text-slate-200 border border-slate-800'
+              }`}
+            >
+              {ct.label}
+            </button>
+          ))}
+        </div>
+
         {/* Categories & Search Input Row */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-3 pt-2 border-t border-slate-800/60">
           <div className="flex items-center gap-1.5 flex-wrap w-full md:w-auto">
@@ -305,15 +349,24 @@ export const GlobalNewsWireView: React.FC<GlobalNewsWireViewProps> = ({
             <div>
               {/* Header Badges */}
               <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${getSourceColor(item.source)}`}>
                     {item.source}
                   </span>
-                  {item.source.toLowerCase().includes('youtube') && (
-                    <span className="flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded bg-red-950 text-red-400 border border-red-800 font-bold">
-                      <PlayCircle className="w-2.5 h-2.5" />
-                      VIDEO
+                  {item.segmentTag && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 font-mono">
+                      {item.segmentTag}
                     </span>
+                  )}
+                  {item.videoUrl && (
+                    <button
+                      onClick={() => setActiveVideoModal(item)}
+                      className="flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded bg-red-950 hover:bg-red-900 text-red-300 border border-red-800 font-bold transition-colors"
+                      title="Watch live stream / video briefing segment"
+                    >
+                      <PlayCircle className="w-2.5 h-2.5 text-red-400" />
+                      <span>WATCH</span>
+                    </button>
                   )}
                   {item.isLiveBroadcast && (
                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-600 text-white font-bold animate-pulse">
@@ -321,7 +374,7 @@ export const GlobalNewsWireView: React.FC<GlobalNewsWireViewProps> = ({
                     </span>
                   )}
                 </div>
-                <span className="text-[10px] text-slate-400 font-mono flex items-center gap-1">
+                <span className="text-[10px] text-slate-400 font-mono flex items-center gap-1 shrink-0">
                   <Clock className="w-3 h-3 text-slate-500" />
                   {item.timeAgo}
                 </span>
@@ -394,6 +447,57 @@ export const GlobalNewsWireView: React.FC<GlobalNewsWireViewProps> = ({
           <p className="text-xs text-slate-400">
             Try adjusting your source filter or clearing your search term to view all global dispatches.
           </p>
+        </div>
+      )}
+
+      {/* Video Dispatch / OSINT Stream Modal */}
+      {activeVideoModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
+          <div className="bg-slate-950 border border-slate-700 rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col">
+            <div className="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <PlayCircle className="w-4 h-4 text-red-500 animate-pulse" />
+                <span className="font-bold text-xs text-white uppercase tracking-wider">
+                  {activeVideoModal.source}: {activeVideoModal.headline}
+                </span>
+              </div>
+              <button
+                onClick={() => setActiveVideoModal(null)}
+                className="text-slate-400 hover:text-white p-1 rounded font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="relative aspect-video w-full bg-black">
+              {activeVideoModal.videoUrl ? (
+                <iframe
+                  src={activeVideoModal.videoUrl}
+                  title={activeVideoModal.headline}
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-slate-400 text-xs">
+                  Video broadcast not directly embeddable. Use source link below.
+                </div>
+              )}
+            </div>
+
+            <div className="p-3 bg-slate-900 text-xs text-slate-300 flex items-center justify-between">
+              <span className="text-[11px] text-slate-400">{activeVideoModal.summary}</span>
+              <a
+                href={activeVideoModal.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-cyan-400 hover:text-cyan-300 shrink-0 font-bold ml-2"
+              >
+                <span>OPEN SOURCE</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
         </div>
       )}
     </div>
