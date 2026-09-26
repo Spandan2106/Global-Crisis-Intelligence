@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: geopolitical-crisis-intel
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: VITE_GOOGLE_MAPS_API_KEY
+        value: AIzaSyD8U5wu8pBGE-lTkloLDVqc90GpMLW7GzI
+      - key: VITE_GOOGLE_MAPS_MAP_ID
+        value: DEMO_MAP_ID
