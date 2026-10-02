@@ -42,3 +42,44 @@ Ensure you have the following installed on your system:
    ```bash
    git clone [https://github.com/Spandan2106/Global-Crisis-Intelligence.git](https://github.com/Spandan2106/Global-Crisis-Intelligence.git)
    cd Global-Crisis-Intelligence
+   ```
+2. **Install dependencies using Bun:**
+
+```Bash
+bun install
+```
+3. **Configure environment variables:**
+Copy the example environment file and update it with your specific credentials:
+
+```Bash
+cp .env.example .env
+```
+4. **Start the development server:**
+
+```Bash
+bun run dev
+```
+**🌍 Deployment**
+This repository includes configuration files for seamless continuous deployment:
+
+* Vercel: Configured via ```vercel.json``` for optimal frontend delivery.
+
+* Render: Configured via``` render.yaml``` for backend/service hosting.
+
+**🤝 Contributing**
+Contributions, feature requests, and bug reports are always welcome!
+
+1. * Fork the project.
+
+2. * Create your feature branch (```git checkout -b feature/AmazingFeature```).
+
+3. * Commit your changes (```git commit -m 'feat: add some AmazingFeature'```).
+
+4. * Push to the branch (```git push origin feature/AmazingFeature```).
+
+5. * Open a Pull Request.
+
+**📄 License**
+Distributed under the MIT License. See ***LICENSE*** for more information.
+
+Initially generated from the ***google-gemini/aistudio-repository-template.***
