@@ -1,5 +1,19 @@
 # Contributing to Global Crisis Intelligence 🌍
-
+<p align="left">
+  <a href="https://github.com/Spandan2106/Global-Crisis-Intelligence/issues">
+    <img src="https://img.shields.io/github/issues/Spandan2106/Global-Crisis-Intelligence?color=blue&style=flat-square" alt="Issues" />
+  </a>
+  <a href="https://github.com/Spandan2106/Global-Crisis-Intelligence/pulls">
+    <img src="https://img.shields.io/github/issues-pr/Spandan2106/Global-Crisis-Intelligence?color=brightgreen&style=flat-square" alt="Pull Requests" />
+  </a>
+  <a href="https://github.com/Spandan2106/Global-Crisis-Intelligence/blob/main/CONTRIBUTING.md">
+    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome" />
+  </a>
+  <a href="https://github.com/Spandan2106/Global-Crisis-Intelligence/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/Spandan2106/Global-Crisis-Intelligence?color=orange&style=flat-square" alt="License" />
+  </a>
+  <img src="https://img.shields.io/github/repo-size/Spandan2106/Global-Crisis-Intelligence?style=flat-square" alt="Repo Size" />
+</p>
 Thank you for your interest in contributing to **Global Crisis Intelligence**!
 
 Global Crisis Intelligence is an interactive intelligence dashboard designed to bring global events, geopolitical developments, conflict information, economic indicators, and AI-assisted insights together in one place.
